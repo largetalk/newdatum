@@ -10,6 +10,11 @@ ls -l | wc -l
 tr:
 ls -l | tr 'a-z' 'A-Z'
 
+find:
+find -name "django*" -prune -o -name "*.py"
+find . -mtime -1 -type f -print
+find . -mtime -1 -type f -print0 | xargs -0 tar rvf "$archive.tar"
+
 grep:
 ls -l | grep ^d
 ls -l | grep -n ^d
@@ -29,6 +34,9 @@ echo "a|b|c" | awk -F\| '{print $1}'
 sed:
 ls -l | sed 's/largetalk/root/g'
 seq 6 | sed '1!G;h;$!d'
+
+else:
+echo "whatever" | cat -
 
 其他如df, top, free, uptime等就不说了
 shell就是把很多小命令组合成一个大的工作，有时候还是很方便的，虽然很难看懂，奉送一个我写的shell，不算太复杂，但太长太难懂
