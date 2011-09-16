@@ -1,0 +1,113 @@
+#!/bin/bash
+
+push()
+{
+    HOST=${1:-hant}
+    [ $HOST != hant ] && VERBOSE=-v
+    # can't push without a working copy
+    DEPLOY_DIR='bingo_'$(date +%F_%H-%M)/
+    RELEASE_DIR=/tmp/bingo_deploy/
+
+    # the heart-beating part: try git first, and fallback to svn
+    git status > /dev/null 2>&1
+    if [ $? -ne 0 ]
+    then
+        mkdir -p $RELEASE_DIR
+        svn info > ${RELEASE_DIR}VERSION 2>/dev/null || exit 1
+        svn update
+        svn export . $RELEASE_DIR --force
+        (
+            cd $RELEASE_DIR
+            rm -fr doc
+            find \( -name \*.py? -o -name DIGEST -o -name .svn \) -prune \
+                -o -type d -exec [ -e '{}/.bingo' ] \; -prune \
+                -o -type f -exec md5sum {} + > DIGEST
+        )
+        rsync -a $VERBOSE --remove-source-files $RELEASE_DIR zhiqing.wang@$HOST:$DEPLOY_DIR
+    else
+        git log --oneline > VERSION 2>/dev/null || exit 1
+        find \( -name \*.py[co] -o -name DIGEST -o -name .git \) -prune \
+            -o -type f -exec md5sum {} + > DIGEST
+        rsync -a $VERBOSE --exclude=.git ./ zhiqing.wang@$HOST:$DEPLOY_DIR
+    fi
+
+    # post-clean
+    rm -fr $RELEASE_DIR
+    rm -f DIGEST VERSION
+    # restart the server, redirection required from the pushing side
+    ssh zhiqing.wang@$HOST "bingo/deploy restart new > /dev/null 2>&1"
+}
+
+verify()
+{ 
+    cd bingo
+    md5sum -c DIGEST | grep --color=auto FAILED
+    if [ $? -ne 0 ]
+    then
+        echo -e '\e[1;32mThis release is consistant.\e[0m'
+    else
+        echo -e '\e[1;31mThis release is modified without version control.\e[0m'
+    fi
+}
+
+checkuser()
+{
+    [[ $USER != zhiqing.wang ]] && {
+        echo "Error: This can only be run as user 'bingo'." 
+        exit 3
+    }
+}
+
+start()
+{
+    checkuser
+    [[ $1 == new ]] && {
+        rm -f bingo
+        new=$(ls -rd bingo_* | sed '1q')
+        ln -s $new bingo
+    }
+    STAGING=${STAGING:-testing} python bingo/site/bingo.fcgi &
+    echo $! > /tmp/bingo.pid
+}
+
+stop()
+{
+    checkuser
+    pkill -9 -f bingo.fcgi
+}
+
+restart()
+{
+    checkuser
+    stop
+    start $@
+}
+
+revert()
+{
+    version=$((${1:-1}+1))
+    rm -f bingo
+    old=$(ls -rd bingo_* | sed "${version}!d")
+    [ -n $old ] && ln -s $old bingo
+    restart
+}
+
+clean()
+{
+    old=$(ls -rd bingo_* | sed "1,${1:-3}d" | tac)
+    rm -fr $old
+}
+
+[ -z $1 ] || {
+    [[ $1 != push ]] && [ ! -f bingo/VERSION ] && {
+        echo "Error: Can not $1 from here. Not a release copy?"
+        exit 2
+    }
+    $@
+}
+[ $# -eq 0 ] && {
+    echo "Usage: $0 <push|start|stop|restart|revert> [params]"
+    exit 1
+}
+
+exit 0

@@ -1,0 +1,224 @@
+一、 选中单个单元格
+Range(“<单元格地址>“).Select
+例：Range("C9").Select ‘选中“C9”单元格
+
+二、 选中多个单元格
+Range(“<单元格地址>:<单元格地址>[,<单元格地址>……]”).Select
+例：Range(“A1:B2”).Select ‘选中“A1”、“A2”、“B1”、“B2”四个连续的单元格
+Range(“12:12”).Select ‘选中第12行
+Range(“B:B”).Select ‘选中第B列
+Range(“A1:A2,B7,2:2”).Select ‘选中“A1”、“A2”、“B7”五个不连续的单元格和第二行
+Cells.Select ‘选中当前SHEET中的所有单元格
+Rows("<行地址>:<行地址>").Select ‘选中整行
+Columns("<列地址>:<列地址>").Select ‘选中整列
+例：Rows(“2:2”). Select ‘选中第2行
+Rows(“2:5”). Select ‘选中2到5行
+Columns("A:A").Select ‘选中A列
+Columns("E:B").Select ‘选中E到B列
+
+
+三、 设置活动单元格
+Range("<单元格地址>").Activate
+注：设置活动单元格与选中单元格类似，不同之处就是
+后者在选中指定的单元格之前会将在此前已被选中的单元格取消掉。
+前者在设置之前不会取消已选中的单元格，如果此时操作的单元格不是被选中的单元格，这时他实现的功能与选一个单元格相同。
+
+
+四、 给活动的单元格赋值
+ActiveCell.FormulaR1C1 = <值>
+例：Range("A1").Select
+ActiveCell.FormulaR1C1 = "Name"
+Range("B1").Select
+ActiveCell.FormulaR1C1 = "Age"
+Range("A2:B3").Select
+Range("A2").Activate
+ActiveCell.FormulaR1C1 = " BUG"
+Range("B2").Activate
+ActiveCell.FormulaR1C1 = "12"
+Range("A3").Activate
+ActiveCell.FormulaR1C1 = "Archer"
+Range("B3").Activate
+ActiveCell.FormulaR1C1 = "37"
+
+
+五、 得到指定单元格中的值
+Range("<单元格地址>").Text
+
+六、 插入单元格
+Selection.Insert Shift:=<XlDirection值>
+Selection.EntireRow.Insert
+Selection.EntireColumn.Insert
+例：Selection.Insert Shift:=xlToRight ‘在当前选中单元格的位置插入单元格并将当前选中的单元格向右移动
+Selection.Insert Shift:=xlDown ‘在当前选中单元格的位置插入单元格并将当前选中的单元格向下移动
+Selection.EntireRow.Insert ‘在当前选中单元格的上面插入一行
+Selection.EntireColumn.Insert ‘在当前选中单元格的左侧插入一列
+
+
+七、 设置字体属性
+1.      设置字体名称和大小
+Selection.Font.Name = <字体名称>
+Selection.Font.Size = <字号>
+例：Selection.Font.Name = "隶书"
+Selection.Font.Size = 15
+
+2.     设置字体样式
+Selection.Font.Bold = <True / False> ‘加粗
+Selection.Font.Italic = <True / False> ‘斜体
+Selection.Font.Underline = < XlUnderlineStyle(下划线样式)> ‘下划线
+XlUnderlineStyle(下划线样式):
+xlUnderlineStyleDouble ‘双下划线
+xlUnderlineStyleDoubleAccounting ‘会计用双下划线（如果当前单元格中的数据是数字时则下划线的宽度是当前单元格的宽度）
+xlUnderlineStyleNone 没有下划线
+xlUnderlineStyleSingle ‘单下划线
+xlUnderlineStyleSingleAccounting ‘会计用单下划线（如果当前单元格中的数据是数字时则下划线的宽度是当前单元格的宽度）
+
+3.     设置字体的颜色
+Selection.Font.ColorIndex = <0到56之间的数字>
+Selection.Font.Color = <RGB值>
+
+
+4.     设置字体的特殊效果
+Selection.Font.Strikethrough = <True / False> ‘删除线
+Selection.Font.Superscript = <True / False> ‘上标
+Selection.Font.Subscript = <True / False> ‘下标
+
+
+八、 清空选中单元格里的内容
+Selection.ClearContents
+例：Range(“A1:A2,B7,2:2”).Select ‘选中“A1”、“A2”、“B7”五个不连续的单元格和第二行
+Selection.ClearContents ‘清空“A1”、“A2”、“B7”五个不连续单元格中的所有内容
+
+九、 设置选中单元格的边线属性
+XlBordersIndex(边线):
+xlEdgeLeft '单元格左边线
+xlEdgeTop ‘单元格上边线
+xlEdgeRight ‘单元格右边线
+xlEdgeBottom ‘单元格下边线
+xlDiagonalDown ‘单元格左上右下斜线
+xlDiagonalUp ‘单元格左上右下斜线
+xlInsideVertical ‘多个单元格内垂直线
+xlInsideHorizontal ‘多个单元格内水平线
+
+
+1.      设置边线的类型
+Selection.Borders(<边线>).LineStyle = < XlLineStyle(边线类型)>
+XlLineStyle(边线类型):
+xlLineStyleNone ‘无样式
+xlContinuous ‘单线
+xlDash ‘破折号线(间隔线)
+xlDashDot ‘破折号 点线
+xlDashDotDot ‘破折号 点 点线
+xlDot ‘点线
+xlDouble ‘双横线
+xlSlantDashDot ‘斜点线
+
+2.     设置边线的宽度
+Selection.Borders(<边线>).Weight = <XlBorderWeight(边线的宽度值)>
+XlBorderWeight(宽度值):
+xlHairline ‘极细
+xlThin ‘细
+xlMedium ‘中等
+xlThick ‘粗
+
+3.     设置边线的颜色
+Selection.Borders(xlEdgeLeft).ColorIndex = <0到56之间的数字>
+Selection.Borders(xlEdgeLeft).Color = <RGB值>
+
+
+十、 删除选中的单元格
+Selection.Delete <XlDirection值>
+Selection.EntireRow.Delete
+Selection.EntireColumn.Delete
+例：Selection.Delete Shift:=xlToLeft ‘删除选中的单元格,并将已删除单元格所在位置右面的单元格向左移动
+Selection.Delete Shift:=xlUp ‘删除选中的单元格,并将已删除单元格所在位置下面的单元格向上移动
+Selection.EntireRow.Delete ‘删除选中单元格所在的行
+Selection.EntireColumn.Delete ‘删除选中单元格所在的列
+
+十一、设置单元格背景色及图案
+1.      背景色
+Selection.Interior.ColorIndex = <0到56之间的数字>
+Selection.Interior.Color = <RGB值>
+
+2.     图案样式
+Selection.Interior.Pattern = <Constants(图案样式)>
+Constants(图案样式):
+xlSolid '实心       
+xlGray75 '75% 灰色       
+xlGray50 '50% 灰色       
+xlGray25 '25% 灰色       
+xlGray16 '12.5% 灰色       
+xlGray8 '6.25% 灰色       
+xlHorizontal '水平 条纹       
+xlVertical '垂直 条纹       
+xlDown '逆对角线 条纹       
+xlUp '对角线 条纹       
+xlChecker '对角线 剖面线       
+xlSemiGray75 '粗 对角线 剖面线       
+xlLightHorizontal '细 水平 条纹       
+xlLightVertical '细 垂直 条纹       
+xlLightDown '细 逆对角线 条纹       
+xlLightUp '细 对角线 条纹       
+xlGrid '细 水平 剖面线   
+xlCrissCross '细 对角线 剖面线
+
+3.     图案颜色
+Selection.Interior.PatternColorIndex = <0到56之间的数字>
+Selection.Interior.PatternColor = <RGB值>
+
+
+十二、返回工作表中的行数
+Sheet1.UsedRange.Rows.Count ‘返回从最小已输入内容的行号到最大已输入内容的行号之间的行数
+Sheet1.UsedRange.Rows(Sheet1.UsedRange.Rows.Count).Row ‘最大已输入内容的行号
+
+
+十三、得到当前EXCEL的文件名
+ThisWorkbook.Path ‘文件路径
+ThisWorkbook.Name ‘文件名
+ThisWorkbook.FullName ‘全路径
+
+十四、批注的操作
+1.      添加批注
+AddComment([Content])
+例：Range("A1").AddComment ("Writes the content in here!")
+2.     修改批注内容
+Comment.Text
+例：Range("B1").Comment.Text Text:= "Writes the content in here!"
+3.     显示/隐藏批注
+Comment.Visible = <True/False>
+4.     删除批注
+ClearComments
+例：Selection.Range("B1").ClearComments
+5.     选中批注
+Comment.Shape.Select True
+例：Range("D8").Comment.Shape.Select True
+6.     改变批注大小和位置
+Selection.ShapeRange.ScaleWidth <宽度比例>, msoFalse, <MsoScaleFrom>
+Selection.ShapeRange.ScaleHeight <高度比例>, msoFalse, <MsoScaleFrom>
+例：Selection.ShapeRange.ScaleWidth 1.5, msoFalse, msoScaleFromTopLeft ‘每次增加5%的宽度
+Selection.ShapeRange.ScaleHeight 0.6, msoFalse, msoScaleFromTopLeft ‘每次减少6%的宽度
+Selection.ShapeRange.Left = <左边距>
+Selection.ShapeRange.Top = <上边距>
+Selection.ShapeRange.Width = <宽度值>
+Selection.ShapeRange.Height = <高度值>
+
+十五、剪切、复制、粘贴
+Selection.Cut ‘剪切
+Selection.Copy ‘复制
+ActiveSheet.Paste ‘粘贴
+例：Range("A1").Select
+Selection.Cut
+Range("A2").Select
+ActiveSheet.Paste
+Selection.Copy
+Range("A3").Select
+ActiveSheet.Paste
+
+十六、选择性粘贴
+Selection.PasteSpecial <option>
+
+十七、改变列宽
+Selection.ColumnWidth = <宽度值> ‘指定列宽
+例：Columns("A:A").Select
+Selection.ColumnWidth = 30 ‘改变已选列的宽度
+EntireColumn.AutoFit ‘自动改变列宽
+例：Columns("C:C").EntireColumn.AutoFit ‘根据C列的内容自动改变列的宽度

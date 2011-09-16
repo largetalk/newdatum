@@ -1,0 +1,19 @@
+#!/bin/bash
+
+PARAM=$( python <<EOF
+from bingo.settings import DATABASES
+print '--user={0[USER]} --password={0[PASSWORD]} --database={0[NAME]} --host={0[HOST]}'.format(DATABASES['default'])
+EOF
+)
+CONN="mysql --force -N $PARAM"
+
+(
+cat <<"END"
+BEGIN;
+
+
+COMMIT;
+
+END
+) | $CONN
+exit 0
