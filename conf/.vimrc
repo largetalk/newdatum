@@ -168,3 +168,5 @@ filetype plugin on
 let g:pydiction_location = '~/.vim/tools/pydiction/complete-dict'
 "default g::pydiction_menu_height == 15
 "let g:pydiction_menu_height = 20
+"
+"NERDTree, vimim
