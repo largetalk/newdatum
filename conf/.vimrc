@@ -26,7 +26,7 @@ highlight StatusLineNC guifg=Gray guibg=White
 set ww=h,l,<,>,[,],b,s " move over new lines
 set hls
 set ch=2 " enlarge cmdheight so as to avoid the message "HIT ENTER TO CONTINUE"
-colorscheme elflord "murphy
+colorscheme delek
 map <Space> ^F " spacebar in command mode to pagedown
 map <BS> X
 map <Up> gk
