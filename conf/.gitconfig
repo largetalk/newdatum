@@ -1,0 +1,16 @@
+[color]
+	status = auto
+	diff = auto
+	branch = auto
+    interactive = auto
+    grep = auto
+[user]
+	name = Arthur
+    email = wangzhiqing@ata.net.cn
+[alias]
+      st = status
+      ci = commit
+      br = branch
+      co = checkout
+      df = diff
+	lg = log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --
