@@ -1,0 +1,205 @@
+pg手册
+
+1: # edit file /etc/postgresql/pg_hba.conf, and lines at file top:
+local   test       test                                          md5
+host    test       test     127.0.0.1         255.255.255.255    md5
+host    test      test     172.16.120.0 255.255.255.0          password
+
+edit /etc/postgresql/9.1/main/postgresql.conf
+listen_addresses = "*"
+
+2: # su - postgres
+3: $ pg_ctl reload
+4: $ createuser -ADPE test   #-D no createdb -E encrypt -P password prompt
+Enter password for new user:
+Enter it again:
+CREATE USER
+5: $ createdb -O test test   #-O owner
+CREATE DATABASE
+6: $ createlang plpgsql test
+$ logout
+# psql -h 127.0.0.1 -U test test
+
+//////////////////
+
+You could also have used COPY to load large amounts of data from flat-text files
+COPY weather FROM '/home/user/weather.txt';
+
+\d #show table
+\l #show databases
+
+SELECT max(temp_lo) FROM weather;
+SELECT city FROM weather
+    WHERE temp_lo = (SELECT max(temp_lo) FROM weather);
+SELECT city, max(temp_lo)
+    FROM weather
+    GROUP BY city;
+SELECT city, max(temp_lo)
+    FROM weather
+    GROUP BY city
+    HAVING max(temp_lo) < 40;
+BEGIN;
+UPDATE accounts SET balance = balance - 100.00
+    WHERE name = 'Alice';
+-- etc etc
+COMMIT;
+
+BEGIN;
+UPDATE accounts SET balance = balance - 100.00
+    WHERE name = 'Alice';
+SAVEPOINT my_savepoint;
+UPDATE accounts SET balance = balance + 100.00
+    WHERE name = 'Bob';
+-- oops ... forget that and use Wally's account
+ROLLBACK TO my_savepoint;
+UPDATE accounts SET balance = balance + 100.00
+    WHERE name = 'Wally';
+COMMIT;
+SELECT depname, empno, salary, avg(salary) OVER (PARTITION BY depname) FROM empsalary;
+SELECT depname, empno, salary, rank() OVER (PARTITION BY depname ORDER BY salary DESC) FROM empsalary;
+SELECT salary, sum(salary) OVER () FROM empsalary;
+SELECT salary, sum(salary) OVER (ORDER BY salary) FROM empsalary;
+
+CREATE TABLE cities (
+  name       text,
+  population real,
+  altitude   int     -- (in ft)
+);
+
+CREATE TABLE capitals (
+  state      char(2)
+) INHERITS (cities);
+SELECT name, altitude
+    FROM ONLY cities
+    WHERE altitude > 500;
+
+CREATE FUNCTION concat_lower_or_upper(a text, b text, uppercase boolean DEFAULT false)
+RETURNS text
+AS
+$$
+ SELECT CASE
+        WHEN $3 THEN UPPER($1 || ' ' || $2)
+        ELSE LOWER($1 || ' ' || $2)
+        END;
+$$
+LANGUAGE SQL IMMUTABLE STRICT;
+CREATE TABLE products (
+    product_no integer,
+    name text,
+    price numeric DEFAULT 9.99
+);
+CREATE TABLE products (
+    product_no integer DEFAULT nextval('products_product_no_seq'),
+    ...
+);
+	
+A check constraint is the most generic constraint type
+CREATE TABLE products (
+    product_no integer,
+    name text,
+    price numeric CHECK (price > 0)
+);
+CREATE TABLE products (
+    product_no integer,
+    name text,
+    price numeric CONSTRAINT positive_price CHECK (price > 0)
+);
+CREATE TABLE orders (
+    order_id integer PRIMARY KEY,
+    product_no integer REFERENCES products (product_no),
+    quantity integer
+);
+CREATE TABLE orders (
+    order_id integer PRIMARY KEY,
+    product_no integer REFERENCES products,
+    quantity integer
+);
+ALTER TABLE products ADD COLUMN description text CHECK (description <> '');
+ALTER TABLE products ALTER COLUMN price TYPE numeric(10,2);
+ALTER TABLE products RENAME COLUMN product_no TO product_number;
+ALTER TABLE products RENAME TO items;
+
+CREATE SCHEMA schemaname AUTHORIZATION username;
+SET search_path TO myschema,public;
+REVOKE CREATE ON SCHEMA public FROM PUBLIC;
+
+postgres的partition使用多表加trigger完成，像mysql的分表
+SELECT DISTINCT ON (expression [, expression ...]) select_list ...
+query1 UNION [ALL] query2
+query1 INTERSECT [ALL] query2
+query1 EXCEPT [ALL] query2
+
+WITH regional_sales AS (
+        SELECT region, SUM(amount) AS total_sales
+        FROM orders
+        GROUP BY region
+     ), top_regions AS (
+        SELECT region
+        FROM regional_sales
+        WHERE total_sales > (SELECT SUM(total_sales)/10 FROM regional_sales)
+     )
+SELECT region,
+       product,
+       SUM(quantity) AS product_units,
+       SUM(amount) AS product_sales
+FROM orders
+WHERE region IN (SELECT region FROM top_regions)
+GROUP BY region, product;
+
+
+AND
+OR
+NOT
+a BETWEEN x AND y
+< > <= >= = <> !=
+expression IS NULL
+expression IS NOT NULL
++ - * / % ^ |/ ||/ ! !! @ & | # ~ << >>
+一些函数，正则函数，like, similar to, ~ ~* !~ !~*, 时间函数,枚举函数,几何函数, 网络地址函数, 文本搜索函数, xml函数, sequence函数
+CASE WHEN condition THEN result
+     [WHEN ...]
+     [ELSE result]
+END
+The COALESCE function returns the first of its arguments that is not null. Null is returned only if all arguments are null
+COALESCE(value [, ...])
+NULLIF(value1, value2)
+ GREATEST and LEAST
+数组操作函数，聚集（统计）函数， window函数
+
+EXISTS (subquery)
+IN(subquery)
+系统信息函数，权限函数，系统管理函数，触发器函数
+
+CREATE INDEX name ON table USING hash (column);
+GiST indexes are not a single kind of index, but rather an infrastructure within which many different indexing strategies can be implemented
+GIN indexes are inverted indexes which can handle values that contain more than one key
+including the options ASC, DESC, NULLS FIRST, and/or NULLS LAST when creating the index
+index on expressions
+partial index  --One major reason for using a partial index is to avoid indexing common values. 
+CREATE INDEX access_log_client_ip_ix ON access_log (client_ip)
+WHERE NOT (client_ip > inet '192.168.100.0' AND
+           client_ip < inet '192.168.100.255');
+CREATE INDEX name ON table (column opclass [sort options] [, ...]);
+
+show all;
+set search_path "xxxx";
+CREATE DATABASE dbname TEMPLATE template0;
+CREATE TABLESPACE fastspace LOCATION '/mnt/sda1/postgresql/data';
+CREATE TABLE foo(i int) TABLESPACE space1;
+
+SET default_tablespace = space1;
+CREATE TABLE foo(i int);
+
+pg_dump dbname > outfile
+psql dbname < infile
+psql --set ON_ERROR_STOP=on dbname < infile
+pg_dump -h host1 dbname | psql -h host2 dbname
+
+pg_dumpall > outfile
+psql -f infile postgres
+
+pg_dump dbname | gzip > filename.gz
+gunzip -c filename.gz | psql dbname
+
+pg_dump dbname | split -b 1m - filename
+cat filename* | psql dbname
