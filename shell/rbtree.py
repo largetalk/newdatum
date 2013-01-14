@@ -189,54 +189,95 @@ class RBTree(object):
         node = self.search(key)
         if not node:
             return None
+
         if not node.left or not node.right:
             succ = node
         else:
             succ = self.successor(node)
+
         if succ.left:
-            son = succ.left
+            child = succ.left
         else:
-            son = succ.right
-        if son: #tips:
-            son.parent = succ.parent
+            child = succ.right
+        if child: #tips:
+            child.parent = succ.parent
+
         if not succ.parent:
-            self.root = son
+            self.root = child
         else:
             if succ == succ.parent.left:
-                succ.parent.left = son
+                succ.parent.left = child
             else:
-                succ.parent.right = son
+                succ.parent.right = child
+
         if succ != node:
             node.key = succ.key
         if not succ.is_red():
-            self.delete_fixup(son)
+            self.delete_fixup(child, succ.parent)
         return succ
 
-    def delete_fixup(self, node):
-        while node != self.root and not node.is_red():
-            if node == node.parent.left:
-                brother = node.parent.right
-                if brother.is_red():
+    def delete_fixup(self, child, parent):
+        while ( not child or not child.is_red()) and child != self.root:
+            if child == parent.left:
+                brother = parent.right #brother must exist
+                if brother.is_red(): #case 1
                     brother.color = RB_BLACK
-                    node.parent.color = RB_RED
-                    self._left_rotate(node.parent)
-                if not brother.left.is_red() and not brother.right.is_red():
+                    parent.color = RB_RED
+                    self._left_rotate(parent)
+                    brother = parent.right
+
+                if ( not brother.left or not brother.left.is_red()) and ( not brother.right or not brother.right.is_red()):
+                    #case 2
                     brother.color = RB_RED
-                    node = node.parent
+                    child = parent
+                    parent = parent.parent
+
                 else:
-                    if not brother.right.is_red():
-                        brother.left.color = RB_BLACK
+                    if not brother.right or not brother.right.is_red():#case 3
+                        if brother.left:
+                            brother.left.color = RB_BLACK
                         brother.color = RB_RED
                         self._right_rotate(brother)
-                        brother = node.parent.right
-                    brother.color = node.parent.color
-                    node.parent.color = RB_BLACK
-                    brother.right.color = RB_BLACK
-                    self._left_rotate(node.parent)
-                    node = self.root
-            else:
-                pass
+                        brother = parent.right
 
+                    #case 4
+                    brother.color = parent.color
+                    parent.color = RB_BLACK
+                    if brother.right:
+                        brother.right.color = RB_BLACK
+                    self._left_rotate(parent)
+                    child = self.root
+            else:
+                brother = parent.left #brother must exist
+                if brother.is_red(): #case 1
+                    brother.color = RB_BLACK
+                    parent.color = RB_RED
+                    self._right_rotate(parent)
+                    brother = parent.left
+
+                if ( not brother.left or not brother.left.is_red()) and ( not brother.right or not brother.right.is_red()):
+                    #case 2
+                    brother.color = RB_RED
+                    child = parent
+                    parent = parent.parent
+
+                else:
+                    if not brother.left or not brother.left.is_red():#case 3
+                        if brother.right:
+                            brother.right.color = RB_BLACK
+                        brother.color = RB_RED
+                        self._left_rotate(brother)
+                        brother = parent.left
+
+                    #case 4
+                    brother.color = parent.color
+                    parent.color = RB_BLACK
+                    if brother.left:
+                        brother.left.color = RB_BLACK
+                    self._right_rotate(parent)
+                    child = self.root
+        if child:
+            child.color = RB_BLACK
 
 
 
@@ -259,4 +300,11 @@ if __name__ == '__main__':
     print rbtree.successor(n8)
     n15 = rbtree.search(15)
     print rbtree.successor(n15)
+    print '##################################'
+    rbtree.delete(1)
+    rbtree.cout()
+
+    rbtree.delete(5)
+    rbtree.cout()
+
 
