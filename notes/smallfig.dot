@@ -1,0 +1,47 @@
+strict digraph G {
+    size = "16,18";
+    main [shape=box, label="int main"];
+    main -> parse -> execute;
+    main -> init [style=dotted];
+    main -> cleanup [weight=8];
+    execute -> { make_string; printf};
+    init -> make_string;
+    edge [color=red];
+    main -> printf;
+    //node [shape=box,style=filled, color=".8 .3 1.0"];
+    execute -> compare;
+
+    node [shape=record];
+    struct1 [label="<f0> left|<f1> mid\ dle|<f2> right"];
+    struct2 [label="<f0> one|<f1> two"];
+    struct3 [label="hello world|{b |{c|<here> d|e}|f}|g|h"];
+    struct1 -> struct2;
+    struct1 -> struct3;
+
+
+    subgraph cluster0 {
+      node [style=filled, color=white];
+      style=filled;
+      color=lightgrey;
+      a0 -> a1 -> a2 -> a3;
+      label = "process #1";
+    }
+
+    subgraph cluster1 {
+      node [style=filled];
+      b0 -> b1 -> b2 -> b3;
+      label = "process #2";
+      color = blue;
+    }
+
+    start -> a0;
+    start -> b0;
+    a3 -> a0;
+    a1 -> b3;
+    a3 -> end;
+    b3 -> end;
+
+    start [shape=Mdiamond];
+    end [shape=Msquare];
+
+    }
