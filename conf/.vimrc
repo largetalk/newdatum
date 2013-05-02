@@ -138,6 +138,7 @@ call append(line(".")+1,"*******************************************************
 endf
 
 "NERD Tree
+let NERDTreeIgnore=['\.pyc$']
 let NERDChristmasTree=1
 let NERDTreeAutoCenter=1
 let NERDTreeBookmarksFile=$VIM.'\Data\NerdBookmarks.txt'
