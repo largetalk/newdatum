@@ -2,7 +2,7 @@ import os
 #from kazoo.client import KazooClient
 import zc.zk
 
-zk = zc.zk.ZooKeeper('172.16.97.11:2181')
+zk = zc.zk.ZooKeeper('127.0.0.1:2181')
 pid = os.getpid()
 flag = False
 
