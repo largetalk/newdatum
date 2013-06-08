@@ -13,4 +13,7 @@
       br = branch
       co = checkout
       df = diff
+    up = pull --rebase
+    merge = merge --no-ff
 	lg = log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --
+    slg = shortlog -sn --no-merges
