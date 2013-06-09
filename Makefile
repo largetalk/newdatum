@@ -1,6 +1,13 @@
 
-all:
+all: git dict
 
 cur_path=$(shell pwd)
-install: all
+git: 
+	@echo "#######install global gitconfig##########"
 	ln -sf $(cur_path)/conf/.gitconfig ~/.gitconfig
+	@echo
+
+dict:
+	@echo '#######install dict utility#############'
+	sudo ln -sf $(cur_path)/utility/dict.py /usr/local/bin/dict
+	@echo
