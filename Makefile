@@ -12,6 +12,11 @@ dict:
 	sudo ln -sf $(cur_path)/utility/dict.py /usr/local/bin/dict
 	@echo
 
+sfz:
+	@echo '##############install sfz utility###############'
+	sudo ln -sf $(cur_path)/utility/sfz.py /usr/local/bin/sfz
+	@echo
+
 tmux:
 	@echo '########install tmux conf###############'
 	ln -sf $(cur_path)/conf/tmux.conf ~/.tmux.conf
