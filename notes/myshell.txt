@@ -43,3 +43,5 @@ shell就是把很多小命令组合成一个大的工作，有时候还是很方
 ssh "$serena_user"@"$serena_host" "find /var/www/ellis/media/upload -name \*.mp3 | xargs file | grep -v Audio | awk -F: '{print \$1, \$2}' | awk -F, '{print \$1, \$4, \$5}' | awk '{if (\$4!=32 || \$6     != 22.05) print \$1, \$4, \$5, \$6, \$7}' | awk '{content=\$1;   print \$0; system(\"stat -c %s \"content)}' " > $unsuitmp3
 
 lynx -dump -listonly -nonumbers http://www.verycd.com/topics/XXX/ | grep ed2k >> ed2k.txt  #爬取verycd ed2k链接
+
+ssh -qTfnN -D 7070 user_name@hostname  #ssh tunnel

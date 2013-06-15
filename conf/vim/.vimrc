@@ -10,6 +10,7 @@ autocmd BufRead,BufNewFile *.py set ai
 set tags=./tags,./../tags;
 set autochdir
 set shellslash
+set cc=79
 set grepprg=grep\ -nH\ $*
 set fillchars=vert:\ ,stl:\ ,stlnc:\
 highlight StatusLine guifg=SlateBlue guibg=Yellow
