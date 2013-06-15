@@ -45,3 +45,6 @@ ssh "$serena_user"@"$serena_host" "find /var/www/ellis/media/upload -name \*.mp3
 lynx -dump -listonly -nonumbers http://www.verycd.com/topics/XXX/ | grep ed2k >> ed2k.txt  #爬取verycd ed2k链接
 
 ssh -qTfnN -D 7070 user_name@hostname  #ssh tunnel
+
+ git remote set-url --push origin git@github.com:largetalk/datum.git
+ git config remote.origin.url git@github.com:largetalk/datum.git
