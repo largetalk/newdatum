@@ -9,11 +9,12 @@ Welcome to essay's documentation!
 Contents:
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    201306/newtype
    201306/amqp
    201306/bigtable
+   201306/pyfind
 
 
 
