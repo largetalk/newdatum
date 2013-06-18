@@ -2,7 +2,9 @@
 Python Find 源码
 ========================
 
-首先找到string.find定义的地方， 在Objects/stringobject.c::
+首先找到string.find定义的地方， 在Objects/stringobject.c:
+
+.. code-block:: c
       
   static PyObject *  
   string_find(PyStringObject *self, PyObject *args)  
@@ -37,8 +39,10 @@ Python Find 源码
   }  
     
 
-stringlib_find_slice 定义在 Objects/stringlib/find.h::
+stringlib_find_slice 定义在 Objects/stringlib/find.h:
     
+.. code-block:: c
+      
   Py_LOCAL_INLINE(Py_ssize_t)  
   stringlib_find_slice(const STRINGLIB_CHAR* str, Py_ssize_t str_len,  
                        const STRINGLIB_CHAR* sub, Py_ssize_t sub_len,  
@@ -68,8 +72,10 @@ stringlib_find_slice 定义在 Objects/stringlib/find.h::
       return pos;  
   }  
    
-fastsearch 定义在 Objects/stringlib/fastsearch.h, 先是些宏定义::
+fastsearch 定义在 Objects/stringlib/fastsearch.h, 先是些宏定义:
     
+.. code-block:: c
+      
   #if LONG_BIT >= 128  
   #define STRINGLIB_BLOOM_WIDTH 128  
   #elif LONG_BIT >= 64  
@@ -87,8 +93,10 @@ fastsearch 定义在 Objects/stringlib/fastsearch.h, 先是些宏定义::
 
 STRINGLIB_BLOOM 和 STRINGLIB_BLOOM_ADD 这里是构建了一个字符的bloom-filter, STRINGLIB_BLOOM_ADD简单来说就是 mask =| 1 << int(ch), STRINGLIB_BLOOM 是 mask & ( 1 << int(ch) )
 
-具体的实现::
+具体的实现:
     
+.. code-block:: c
+      
   Py_LOCAL_INLINE(Py_ssize_t)  
   fastsearch(const STRINGLIB_CHAR* s, Py_ssize_t n,  
              const STRINGLIB_CHAR* p, Py_ssize_t m,  

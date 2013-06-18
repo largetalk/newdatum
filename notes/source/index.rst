@@ -15,6 +15,9 @@ Contents:
    201306/amqp
    201306/bigtable
    201306/pyfind
+   201306/zeroarray
+   201306/svntips
+   201306/zookeeper
 
 
 
