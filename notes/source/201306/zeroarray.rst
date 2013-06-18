@@ -41,3 +41,31 @@ Zero-sized Array
   $ gcc -pedantic test.c -o t
   test.c: In function ‘main’:
   test.c:22:9: warning: ISO C forbids zero-size array ‘arr’ [-pedantic]
+
+gnu_ 上开头就举了一个Zero Length Array的实用例子:
+
+.. _gnu: http://gcc.gnu.org/onlinedocs/gcc/Zero-Length.html
+
+.. code-block:: c
+
+  struct line {
+    int length;
+    char contents[0];
+  };
+  
+  struct line *thisline = (struct line *)
+    malloc (sizeof (struct line) + this_length);
+  thisline->length = this_length;
+
+这个技巧非常有用，contents和结构体内存上相近，读取很快，而且节省一个指针(contents是不占内存的)
+
+因此，上文的这段代码：
+
+.. code-block:: c
+
+    union {
+        uint64_t cas;
+        char end;
+    } data[];
+
+表示定义一个成员名叫data的zero-length array, 而data的类型是union, 以后可以通过data[i].cas 或 data[i].end来获得内存中数据。
