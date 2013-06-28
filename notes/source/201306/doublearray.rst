@@ -127,3 +127,7 @@ construction
         end;
         base[s] := b
     end
+
+Darts_ : Double Array C++ 实现 
+
+.. _Darts: http://www.52nlp.cn/darts-double-array-trie-system-%E7%BF%BB%E8%AF%91%E6%96%87%E6%A1%A3
