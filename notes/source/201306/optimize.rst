@@ -4,7 +4,7 @@
 
 计算两条线段是否相交， 两条线段的坐标分别是A: (x1, y1), (x2, y2)， B: (x3, y3), (x4, y4)
 
-.. code:: python
+.. code-block:: python
 
     den = (y4-y3) * (x2-x1) - (x4-x3) * (y2-y1)
     if den == 0: #平行
