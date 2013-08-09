@@ -40,4 +40,8 @@ nat: network address translation, 网络地址转换， 可以叫转发，不过
     but also has the effect that connections are forgotten when  the  interface goes  down.   
     This is the correct behavior when the next dialup is unlikely to have the same interface address (and hence any estab‐lished connections are lost anyway).
 
+最后查看iptables
 
+.. code-block:: shell
+
+    iptables -t nat --list
