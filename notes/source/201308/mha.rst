@@ -68,7 +68,7 @@ ps: 上面和下面所有的命令最好都使用root用户执行，我曾经使
 
 master, host2上： 
 
-.. code-block:: shell
+.. code-block:: sql
 
     mysql> install plugin rpl_semi_sync_master soname 'semisync_master.so';
     mysql> set global rpl_semi_sync_master_enabled=1;
@@ -83,7 +83,7 @@ master, host2上：
 
 备选master, host3 上：
 
-.. code-block:: shell
+.. code-block:: sql
 
     mysql> install plugin rpl_semi_sync_master soname 'semisync_master.so';
     mysql> set global rpl_semi_sync_master_enabled=1;
@@ -100,7 +100,7 @@ master, host2上：
 
 slave, host4 上：
 
-.. code-block:: shell
+.. code-block:: sql
 
     mysql> install plugin rpl_semi_sync_slave soname 'semisync_slave.so';
     mysql> set global rpl_semi_sync_slave_enabled=1;
@@ -111,7 +111,7 @@ slave, host4 上：
 
 在备用节点和从节点的/etc/mysql/my.cnf中加入选项：
 
-    read_only=1 #这个设置你待商榷，备选master设为read only之后，master转移到备选master后数据库不可写(有super权限的用户还是可写）
+    read_only=1 #这个设置待商榷，备选master设为read only之后，master转移到备选master后数据库不可写(有super权限的用户还是可写）
 
     relay_log_purge=0
 
@@ -119,7 +119,7 @@ slave, host4 上：
 
 在master上：
 
-.. code-block:: shell
+.. code-block:: sql
 
     mysql> grant replication slave on *.* to repl@'172.16.21.%' identified by 'repl';
     mysql> show master status;
@@ -127,7 +127,7 @@ slave, host4 上：
 
 在备选master和slave上：
 
-.. code-block:: shell
+.. code-block:: sql
 
     mysql> change master to master_host="172.16.21.23",master_user="repl",master_password="repl",master_log_file="bin-log.000001",master_log_pos=255;
 
@@ -135,13 +135,13 @@ master_log_file 和 master_log_pos 是上面记下的东西。
 
 在备选master上：
 
-.. code-block:: shell
+.. code-block:: sql
 
     mysql> grant replication slave on *.* to repl@'172.16.21.%' identified by 'repl';
 
 然后在备选master和slave上：
 
-.. code-block:: shell
+.. code-block:: sql
 
     mysql>start slave；
     mysql>show slave status\G；
@@ -151,3 +151,239 @@ master_log_file 和 master_log_pos 是上面记下的东西。
 
 安装MHA
 =========================
+
+下载MHA Node 0.54: https://code.google.com/p/mysql-master-ha/downloads/detail?name=mha4mysql-node_0.54-0_all.deb&can=2&q= 
+
+和 MHA Manager 0.55: https://code.google.com/p/mysql-master-ha/downloads/detail?name=mha4mysql-manager_0.55-0_all.deb&can=2&q=  
+
+其他版本的文件在: https://code.google.com/p/mysql-master-ha/downloads/list
+
+先在4台机器上安装MHA Node:
+
+.. code-block:: shell
+
+    apt-get install libdbd-mysql-perl
+    dpkg -i mha4mysql-node_0.54-0_all.deb
+
+在manager/host1 上安装MHA Manager:
+
+.. code-block:: shell
+
+    apt-get install libdbd-mysql-perl
+    apt-get install libconfig-tiny-perl
+    apt-get install liblog-dispatch-perl
+    apt-get install libparallel-forkmanager-perl
+    dpkg -i mha4mysql-manager_0.55-0_all.deb
+    mkdir -p /masterha/app1/
+
+在manager上创建配置文件/etc/app1.cnf, 内容如下:
+
+.. code-block:: python
+
+    [server default]
+    manager_workdir=/masterha/app1
+    manager_log=/masterha/app1/manager.log
+    #remote_workdir=/usr/local/mysql
+    #mysql user and password
+    user=root
+    password=root
+    ssh_user=root
+    repl_user=repl
+    repl_password=repl
+    ping_interval=1
+    shutdown_script=""
+    #master_ip_failover_script=/usr/local/bin/master_ip_failover
+    #master_ip_online_change_script=/usr/local/bin/master_ip_online_change_script
+    #report_script=""
+
+    [server1]
+    hostname=master
+    master_binlog_dir=/var/log/mysql
+    candidate_master=1
+
+    [server2]
+    hostname=172.16.21.50
+    master_binlog_dir=/var/log/mysql
+    candidate_master=1
+    [server3]
+
+    hostname=172.16.21.48
+    master_binlog_dir=/var/log/mysql
+    no_master=1
+
+然后给mysql赋权限, 在3台mysql机器上执行如下语句:
+
+.. code-block:: sql
+
+    mysql> grant all on *.* to root@'172.16.21.15' identified by 'root';
+    mysql> grant all on *.* to root@'172.16.21.23' identified by 'root';
+    mysql> grant all on *.* to root@'172.16.21.50' identified by 'root';
+    mysql> grant all on *.* to root@'172.16.21.48' identified by 'root';
+
+或者也可执行如下语句:
+
+.. code-block:: sql
+
+    mysql> grant all on *.* to root@'172.16.21.%' identified by 'root';
+
+然后建立ssh无密码登录环境:
+
+在manager上:
+
+.. code-block:: shell
+
+    ssh-keygen -t rsa
+    ssh-copy-id root@172.16.21.23
+    ssh-copy-id root@172.16.21.50
+    ssh-copy-id root@172.16.21.48
+
+在master上：
+
+.. code-block:: shell
+
+    ssh-keygen -t rsa
+    ssh-copy-id root@172.16.21.50
+    ssh-copy-id root@172.16.21.48
+
+在备选master上：
+
+.. code-block:: shell
+
+    ssh-keygen -t rsa
+    ssh-copy-id root@172.16.21.23
+    ssh-copy-id root@172.16.21.48
+
+在slave上：
+
+.. code-block:: shell
+
+    ssh-keygen -t rsa
+    ssh-copy-id root@172.16.21.23
+    ssh-copy-id root@172.16.21.50
+
+最后在manager上执行ssh登录检查：
+
+.. code-block:: shell
+
+    masterha_check_ssh --conf=/etc/app1.cnf
+
+和复制情况检查：
+
+.. code-block:: shell
+
+    masterha_check_repl --conf=/etc/app1.cnf
+
+然后可以启动manager:
+
+.. code-block:: shell
+
+    nohup masterha_manager --conf=/etc/app1.cnf < /dev/null > /masterha/app1/manager.log 2>&1 &
+
+检查manager状态：
+
+.. code-block:: shell
+
+    masterha_check_status --conf=/etc/app1.cnf
+
+停止manager:
+
+.. code-block:: shell
+
+    masterha_stop --conf=/etc/app1.cnf
+    # 如果不能停止， 加 --abort选项
+
+在备选master和slave节点 crontab -e 添加计划任务
+
+.. code-block:: shell
+
+    00 00 * * * /usr/local/bin/purge_relay_logs –user=root –password=root –disable_relay_log_purge >> /var/log/purge_relay_logs.log 2>&1
+
+
+测试和恢复MHA
+------------------
+
+manager上 tail -f /masterha/app1/manager.log 监控log
+
+然后在master上 echo c > /proc/sysrq-trigger 使其死机
+
+在log里可以看到master转移到备选master了
+
+除了被动转移master,还可以手动转移master,如下：
+
+.. code-block:: shell
+
+    masterha_master_switch --conf=/etc/app1.cnf --master_state=dead --dead_master_host=...
+    masterha_master_switch --conf=/etc/app1.cnf --master_state=alive --new_master_host=...
+
+注：针对原来的MySQL主服务器是否已经宕机，执行命令所需的参数有所不同。
+
+MHA有个不方便的地方是，无论宕机导致的master切换还是手动切换master, 原来的master都不在MHA架构内了，重新启动也不会加入，必须手动加入。
+
+手动加入和上面的步骤类似，先把当前master数据复制到要加入的机器，然后change master,再start slave, 关键在做这一过程中，系统不能写入，这点要人命。
+
+master_ip_failover, shutdown_script等脚本
+-------------------------------------------------
+
+MHA在配置文件里设置使得一些脚本在特定时候被执行
+
+shutdown_script: MHA用于关闭master的脚本，在代码samples/scripts有一个样例脚本power_manager, 脚本详解可看:https://code.google.com/p/mysql-master-ha/wiki/Parameters#shutdown_script
+
+master_ip_failover_script, master_ip_online_change_script: 发生在master切换的时候，为了应用继续可用，调用这两个脚本做些处理。refs:
+
+.. code-block:: php
+
+    说到Failover，通常有两种方式：一种是虚拟IP地址，一种是全局配置文件。
+    MHA并没有限定使用哪一种方式，而是让用户自己选择，虚拟IP地址的方式会牵扯到其它的软件，这里就不赘述了，
+    以下简单说说全局配置文件，以PHP为实现语言，代码如下：
+    
+    #!/usr/bin/env php
+    <?php
+    $longopts = array(
+        'command:',
+        'ssh_user:',
+        'orig_master_host:',
+        'orig_master_ip:',
+        'orig_master_port:',
+        'new_master_host::',
+        'new_master_ip::',
+        'new_master_port::',
+    );
+    
+    $options = getopt(null, $longopts);
+    
+    if ($options['command'] == 'start') {
+        $params = array(
+            'ip'   => $options['new_master_ip'],
+            'port' => $options['new_master_port'],
+        );
+    
+        $string = '<?php return ' . var_export($params, true) . '; ?>';
+    
+        file_put_contents('config.php', $string, LOCK_EX);
+    }
+    
+    exit(0);
+    ?>
+    注：用其它语言实现这个脚本也是OK的，最后别忘了给脚本加上可执行属性。
+    
+    如果要测试效果的话，可以kill掉当前的MySQL主服务器，稍等片刻，MHA就会把某台MySQL从服务器提升为新的MySQL主服务器，
+    并调用master_ip_failover_script脚本，
+    如上所示，我们在master_ip_failover_script脚本里可以把新的MySQL主服务器的ip和port信息持久化到配置文件里，
+    这样应用就可以使用新的配置了。
+    
+    有时候需要手动切换MySQL主服务器，可以使用masterha_master_switch命令，
+    不过它调用的不是master_ip_failover_script脚本，而是master_ip_online_change_script脚本，但调用参数类似，脚本可以互用。
+
+虚拟ip涉及到其他软件，我们稍后讲
+
+report_script: You might want to send a report (i.e. e-mail) when failover has completed or ended with errors. 接受如下参数：
+
+.. code-block:: shell
+
+    --orig_master_host=(dead master's hostname)
+    --new_master_host=(new master's hostname)
+    --new_slave_hosts=(new slaves' hostnames, delimited by commas)
+    --subject=(mail subject)
+    --body=(body)
+
+这些脚本在代码包里都有示例，但都是perl的，你可以用其他脚本语言自己来写。
