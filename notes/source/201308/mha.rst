@@ -8,7 +8,7 @@ mmm: http://mysql-mmm.org/
 
 mha: https://code.google.com/p/mysql-master-ha/
 
-heartbeat_brdb: http://lin128.blog.51cto.com/407924/279411 http://www.centos.bz/2012/03/achieve-drbd-high-availability-with-heartbeat/
+heartbeat+brdb: http://lin128.blog.51cto.com/407924/279411 http://www.centos.bz/2012/03/achieve-drbd-high-availability-with-heartbeat/
 
 cluster(使用ndb引擎):http://database.51cto.com/art/201008/218326.htm
 
@@ -16,7 +16,7 @@ cluster(使用ndb引擎):http://database.51cto.com/art/201008/218326.htm
 
 双master: http://yunnick.iteye.com/blog/1845301
 
-这里我们不介绍其他的方式他优缺点，只介绍mha的安装过程。
+这里我们不介绍其他的方式以及优缺点，只介绍mha的安装过程。
 
 首先我这篇文档参考了如下网页：
 
@@ -61,7 +61,7 @@ mysql半同步复制需要mysql版本5.5以上，另mysql 5.6以后开源协议�
 
     replicate_ignore_db = mysql
 
-ps: 上面和下面所有的命令最好都使用root用户执行，我曾经使用fei root用户，最后发现很烦， 另ubuntu 默认root是不可以ssh登陆的，要先：passwd root 给root添加密码，这样root就可以ssh登陆了。
+ps: 上面和下面所有的命令最好都使用root用户执行，我曾经使用非 root用户，最后发现很烦， 另ubuntu 默认root是不可以ssh登陆的，要先：passwd root 给root添加密码，这样root就可以ssh登陆了。
 
 半同步复制开启
 ===========================================
@@ -517,7 +517,7 @@ report_script: You might want to send a report (i.e. e-mail) when failover has c
         "Usage: master_ip_failover --command=start|stop|stopssh|status --orig_master_host=host --orig_master_ip=ip --orig_master_port=port --new_master_host=host --new_master_ip=ip --new_master_port=port\n";
     }
 
-将此复制两次到/usr/local/bin, 分别命名为master_ip_failover 和master_ip_online_change_script
+将此文档复制两次到/usr/local/bin, 分别命名为master_ip_failover 和master_ip_online_change_script
 
 然后将/etc/app1.cnf 中下面两行注释去掉：
 
