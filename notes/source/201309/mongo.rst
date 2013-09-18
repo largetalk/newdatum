@@ -162,3 +162,35 @@ linux可用内存计算方法是free + buffers + cached, 实际使用内存是 u
 MongoDB使用的是内存映射存储引擎，它会把数据文件映射到内存中，如果是读操作，内存中的数据起到缓存的作用，如果是写操作，内存还可以把随机的写操作转换成顺序的写操作，总之可以大幅度提升性能。MongoDB并不干涉内存管理工作，而是把这些工作留给操作系统的虚拟内存管理器去处理，这样做的好处是简化了MongoDB的工作，但坏处是你没有方法很方便的控制MongoDB占多大内存，幸运的是虚拟内存管理器的存在让我们多数时候并不需要关心这个问题。
 
 更多内存相关可看: http://huoding.com/2011/08/19/107
+
+ipython command
+=====================
+
+%run
+
+%paste
+
+%cpaste
+
+%timeit %time
+
+%prun  or %run -p or %lprun
+
+%reset
+
+%magic
+
+ipython qtconsole --pylab=inline #ipython gui
+
+Ctrl-R #search
+
+%logstart %logoff %logon %logstate %logstop
+
+!cmd  output = !cmd args
+
+%pwd %cd %pushd %popd %dirs %bookmark
+
+%env
+
+%debug
+
