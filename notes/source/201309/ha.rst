@@ -183,3 +183,24 @@ cat monitor_nginx.sh ::
     fi
 
 
+7. nodejs安装
+
+https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager
+
+.. code-block:: shell
+
+    sudo apt-get update
+    sudo apt-get install python-software-properties python g++ make
+    sudo add-apt-repository ppa:chris-lea/node.js
+    sudo apt-get update
+    ## Your version may be different. Look for "Version:" in /var/lib/apt/lists/ppa.launchpad.net_chris-lea_node.js_[...]_Packages (ellipsised part of path varies with setup)
+    sudo apt-get install nodejs=0.10.18-1chl1~precise1
+    # @@ Why does one need to specify the install version? @@
+
+安装grunt ::
+
+    npm install grunt-cli
+    npm install --save-dev #安装库in package.json
+    grunt dev:client #compile
+
+
