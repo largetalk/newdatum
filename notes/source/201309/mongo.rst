@@ -163,6 +163,30 @@ MongoDB使用的是内存映射存储引擎，它会把数据文件映射到内�
 
 更多内存相关可看: http://huoding.com/2011/08/19/107
 
+######################
+
+top 或ps看一下mongo 
+
+VIRT: 虚拟内存
+
+RES: 常驻内存 这个值就是该应用程序真的使用的内存，但还有两个小问题，一是有些东西可能放在交换盘上了（SWAP），二是有些内存可能是共享的。
+
+SHR: 共享内存 就是说这一块内存空间有可能也被其他应用程序使用着；而Virt － Shr似乎就是这个程序所要求的并且没有共享的内存空间。
+
+DATA: 数据内存（top 按f键） 这一块是真正的该程序要求的数据空间，是真正在运行中要使用的。
+
+使用vmtouch_ 检查文件的缓存情况 ::
+
+    # vmtouch -m4G /var/lib/mongodb/
+    Files: 26
+    Directories: 3
+    Resident Pages: 1690343/3685382  6G/14G  45.9%
+    Elapsed: 0.3167 seconds
+
+.. _vmtouch: https://github.com/hoytech/vmtouch
+
+参考: http://xiezhenye.com/2013/05/mongodb-%E5%86%85%E5%AD%98%E4%BD%BF%E7%94%A8.html
+
 ipython command
 =====================
 
