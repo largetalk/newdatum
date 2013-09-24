@@ -182,6 +182,8 @@ cat monitor_nginx.sh ::
         fi
     fi
 
+ps. monitor_nginx.sh 要加可执行权限，否则不起作用
+
 
 7. nodejs安装
 
