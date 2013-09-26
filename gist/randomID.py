@@ -4,6 +4,7 @@ import string
 import timeit
 import hashlib
 import uuid
+import threading
 
 def randomchoice():
     return ''.join([ random.choice(string.lowercase + string.digits) for _ in range(6)])
@@ -26,6 +27,17 @@ def short_url():
         short_url_lst.append(part_str)
     return short_url_lst[random.randint(0,3)]
 
+_inc = random.randint(0, 0xFFFFFF)
+_inc_lock = threading.Lock()
+
+def inc_val():
+    global _inc
+    _inc_lock.acquire()
+    oid = str(_inc)
+    _inc = (_inc + 1) % 0xFFFFFF
+    _inc_lock.release()
+    return oid
+
 
 def _time(f, n=1000000):
     print 'start timeit function ', f
@@ -36,6 +48,7 @@ def _time(f, n=1000000):
 
 _time(randomchoice)
 _time(short_url)
+_time(inc_val)
 
 
 def _collide(f, n=1000000):
