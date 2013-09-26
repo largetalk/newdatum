@@ -18,13 +18,18 @@ zipcode = ['110000','110100','110101','110102','110103','110104','110105','11010
 
 import random
 
-code = random.choice(zipcode)
-year = str(2013 - random.randint(1,99))
-month = '%02d' % random.randint(1,12)
-day = '%02d' % random.randint(1,31)
-seq = '%03d' % random.randint(0,999)
-print code, year, month, day, seq,
+def gensfz():
+    code = random.choice(zipcode)
+    year = str(2013 - random.randint(1,99))
+    month = '%02d' % random.randint(1,12)
+    day = '%02d' % random.randint(1,31)
+    seq = '%03d' % random.randint(0,999)
+    print code, year, month, day, seq,
+    
+    ch = check(code + year + month + day + seq)
+    
+    print ch
 
-ch = check(code + year + month + day + seq)
 
-print ch
+for i in range(10):
+    gensfz()
