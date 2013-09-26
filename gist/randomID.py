@@ -45,7 +45,7 @@ def _collide(f, n=1000000):
     for _ in xrange(n):
         r = f()
         if r in dic:
-            col + 1
+            col += 1
         else:
             dic[r] = 1
     rate = float(col) / n
@@ -54,4 +54,5 @@ def _collide(f, n=1000000):
     print 
 
 _collide(randomchoice)
+_collide(randomchoice, 10000000)
 _collide(short_url)
