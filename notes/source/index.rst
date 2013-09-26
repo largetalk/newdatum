@@ -28,6 +28,7 @@ Contents:
    201309/ha
    201309/unique
    201309/search
+   201309/struct
 
 
 
