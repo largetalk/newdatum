@@ -83,4 +83,36 @@
     
     m = 62t + ''.join([random.choice(string.lowercase + string.digits) for _ in range(6)])
 
+3. like mongo objectid
 
+.. code-block:: python
+
+    import struct
+    import socket
+    import os
+    import time
+    from hashlib import md5
+    import threading
+    import random
+    import binascii
+    
+    _inc = random.randint(0, 0xFFFFFF)
+    _inc_lock = threading.Lock()
+    
+    oid = ""
+    
+    oid += struct.pack(">i", int(time.time()))
+    
+    m = md5()
+    m.update(socket.gethostname())
+    oid += m.digest()[0:3]
+    
+    oid += struct.pack(">H", os.getpid() % 0xFFFF)
+    
+    _inc_lock.acquire()
+    oid += struct.pack(">i", _inc)[1:4]
+    _inc = (_inc + 1) % 0xFFFFFF
+    _inc_lock.release()
+    
+    print len(oid)
+    print binascii.hexlify(oid)
