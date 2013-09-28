@@ -83,6 +83,72 @@
     
     m = 62t + ''.join([random.choice(string.lowercase + string.digits) for _ in range(6)])
 
+再ps. 有人说random.choice慢而且随机不均匀，我就写了两个小程序测试一下
+
+.. code-block:: python
+
+    import random
+    import time
+    import string
+    import timeit
+    import hashlib
+    import uuid
+    import threading
+    
+    def randomchoice():
+        return ''.join([ random.choice(string.lowercase + string.digits) for _ in range(6)])
+    
+    def _time(f, n=1000000):
+        print 'start timeit function ', f
+        t = timeit.timeit(f, number=n)
+        print 'repeat %s times and used %ss' % (n, t)
+        print 'end timeit function ', f
+        print
+    
+    _time(randomchoice)
+
+result ::
+
+    start timeit function  <function randomchoice at 0x2a7d6e0>
+    repeat 1000000 times and used 3.97338795662s
+    end timeit function  <function randomchoice at 0x2a7d6e0>
+
+
+随机分布 
+
+.. code-block:: python
+
+    from random import choice
+    import string
+    import collections
+    from matplotlib.pyplot import plot, show, barh, yticks, xlabel, title, figure
+    import numpy as np
+    
+    tables = string.ascii_letters + string.digits
+    
+    counter = collections.Counter()
+    
+    for _ in range(1000000):
+        counter[choice(tables)] += 1
+    
+    alphats = counter.keys()
+    y_pos = np.arange(len(alphats))
+    freq = counter.values()
+    
+    figure(figsize=(100,100))
+    barh(y_pos, freq, align='edge', alpha=1, height=0.05)
+    yticks(y_pos, alphats)
+    xlabel('frequence')
+    title('random choice')
+    
+    show()
+
+结果图:
+
+.. image:: ../_static/img/random_choice.png
+
+可见分布还是比较平均的
+
 3. like mongo objectid
 
 .. code-block:: python
