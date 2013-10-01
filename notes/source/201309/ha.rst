@@ -26,14 +26,22 @@ echo c > /proc/sysrq-trigger  # test, invoking kernel panic
 
 2. 编写自动化部署脚本, 安装依赖库，安装包，创建目录结构等
 
-3. 安装nginx, 修改nginx.conf 
+3. 启动应用
+
+   使用gunicorn, 端口绑定到8090, A,B 两台机器一样
+
+4. 配置nginx
+
+   A,B 两台机器都配置nginx,都upstream到A,B 的应用8090端口
+
+5. 安装nginx, 修改site-enabled/xxxx.conf
    
    keepalive_timeout 0; #立马关闭连接
 
    在upstream 下加 keepalive连接数 ::
 
     upstream http_backend {
-        server 127.0.0.1:8080;
+        server 127.0.0.1:8090;
 
         keepalive 16;
     }
@@ -49,14 +57,6 @@ echo c > /proc/sysrq-trigger  # test, invoking kernel panic
             ...
         }
     }
-
-4. 启动应用
-
-   使用gunicorn, 端口绑定到8090, A,B 两台机器一样
-
-5. 配置nginx
-
-   A,B 两台机器都配置nginx,都upstream到A,B 的应用8090端口
 
 6. 安装keepalived 配置成双主模式
 
@@ -183,6 +183,8 @@ cat monitor_nginx.sh ::
     fi
 
 ps. monitor_nginx.sh 要加可执行权限，否则不起作用
+
+ps. 还可以通过添加notify_master, notify_backup, notify_fault添加keepalived切换时发送邮件功能
 
 
 7. nodejs安装
