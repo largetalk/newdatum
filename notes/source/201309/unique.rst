@@ -151,6 +151,8 @@ result ::
 
 3. like mongo objectid
 
+   时间 ＋ md5(hostname) + pid + 递增id
+
 .. code-block:: python
 
     import struct

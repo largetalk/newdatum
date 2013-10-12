@@ -24,7 +24,7 @@ echo c > /proc/sysrq-trigger  # test, invoking kernel panic
 
 1. 添加专用用户, 设置权限
 
-2. 编写自动化部署脚本, 安装依赖库，安装包，创建目录结构等
+2. 编写自动化部署脚本(fabric), 安装依赖库，安装包，创建目录结构等
 
 3. 启动应用
 
