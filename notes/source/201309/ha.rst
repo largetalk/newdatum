@@ -203,8 +203,68 @@ https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager
 
 安装grunt ::
 
-    npm install grunt-cli
+    npm install -g grunt-cli
     npm install --save-dev #安装库in package.json
     grunt dev:client #compile
 
+haproxy
+===================
 
+以前老听人说ha, hb啥的，很高深的样子，这次也洋气了一把，整了下haproxy, 其实...用过也就那么回事，当然我只是简单的配置了一下，还有很多参数需要深入学习
+
+sudo apt-get install haproxy
+
+我的mint默认不开启haproxy守护，改下/etc/default/haproxy, ENABLED=1
+
+cat /etc/haproxy/haproxy.cfg::
+
+    global
+    	log 127.0.0.1	local0
+    	log 127.0.0.1	local1 notice
+    	maxconn 4096
+    	#chroot /usr/share/haproxy
+    	user haproxy
+    	group haproxy
+    	daemon
+    	#debug
+    	#quiet
+    
+    defaults
+    	log	global
+    	mode	http
+    	option	httplog
+    	option	dontlognull
+    	retries	3
+    	option redispatch
+    	maxconn	2000
+    	contimeout	5000
+    	clitimeout	50000
+    	srvtimeout	50000
+    
+    listen rabbit-cluster 0.0.0.0:5672
+        mode tcp
+        balance roundrobin
+        server rabbit_1 172.16.21.46:5672 check inter 2000 rise 2 fall 3
+        server rabbit_2 172.16.21.49:5672 check inter 2000 rise 2 fall 3
+
+    listen web-cluster :80
+        mode tcp
+        balance roundrobin
+        server app_1 172.16.21.46:80 check inter 2000 rise 2 fall 3
+        server app_2 172.16.21.49:90 check inter 2000 rise 2 fall 3
+    
+    listen monitoring :8100
+        mode http
+        option httplog
+        stats enable
+        stats uri /haproxy
+        stats refresh 5s
+
+5672端口反向到两台rabbitmq服务器，这里rabbitmq没有作集群，原因以后说
+
+80反向到nginx的80端， 原来用nginx作loadbalance的，现在不需要这么作了，每台机器就只代理本机的应用，这样作的好处是，添加应用服务器的时候只要改haproxy的配置即可，当然缺点也有。
+
+8100是haproxy state端口，提供一个web界面察看各服务器状态。
+
+这里的配置参数很多都是抄的，没有深入了解各参数的意义，后面要深入学习
+    
