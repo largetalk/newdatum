@@ -261,4 +261,110 @@ A:
 
   service nagios reload
 
-   
+
+自定义监控
+==================
+
+功能强大的Nagios网络监控平台让你可以为其功能增添一系列可用插件。如果你找不到可以满足自身要求的一款插件，也很容易自行编写.
+
+Nagios插件可以用任何一门编程语言来编写，只要该编程语言在运行Nagios的平台上得到支持。Bash是用来编写Nagios插件的一门流行语言，因为它功能强大、使用简单。
+
+借助插件进行的每一次有效的Nagios检查（Nagios check）都会生成一个数字表示的退出状态。可能的状态有：
+
+  * 0--各方面都正常，检查成功完成。
+  * 1--资源处于警告状态。某个地方不太妙。
+  * 2--资源处于临界状态。原因可能是主机宕机或服务未运行。
+  * 3--未知状态，这未必表明就有问题，而是表明检查没有给出一个清楚明确的状态。
+
+插件还能输出文本消息。默认情况下，该消息显示在Nagios web界面和Nagios邮件警报信息中。尽管消息并不是硬性要求，你通常还是可以在可用插件中找到它们，因为消息告诉用户出了什么岔子，而不会迫使用户查阅说明文档。
+
+an simple example write by shell to check nginx
+
+vim /usr/local/nagios/libexec/check_nginx
+
+.. code-block:: shell
+
+    #! /bin/bash
+    
+    ECHO="/bin/echo"
+    GREP="/bin/egrep"
+    DIFF="/usr/bin/diff"
+    TAIL="/usr/bin/tail"
+    CAT="/bin/cat"
+    RM="/bin/rm"
+    CHMOD="/bin/chmod"
+    TOUCH="/bin/touch"
+    
+    PROGNAME=`/usr/bin/basename $0`
+    PROGPATH=`echo $0 | sed -e 's,[\\/][^\\/][^\\/]*$,,'`
+    REVISION="0.1"
+    
+    . $PROGPATH/utils.sh
+    
+    print_usage() {
+        echo "Usage: $PROGNAME"
+        echo "Usage: $PROGNAME --help"
+        echo "Usage: $PROGNAME --version"
+    }
+    
+    print_help() {
+        print_revision $PROGNAME $REVISION
+        echo ""
+        print_usage
+        echo ""
+        echo "Check nginx Running or not"
+        echo ""
+        support
+    }
+    
+    # Grab the command line arguments
+    
+    exitstatus=$STATE_WARNING #default
+    while test -n "$1"; do
+        case "$1" in
+            --help)
+                print_help
+                exit $STATE_OK
+                ;;
+            -h)
+                print_help
+                exit $STATE_OK
+                ;;
+            --version)
+                print_revision $PROGNAME $REVISION
+                exit $STATE_OK
+                ;;
+            -V)
+                print_revision $PROGNAME $REVISION
+                exit $STATE_OK
+                ;;
+            -x)
+                exitstatus=$2
+                shift
+                ;;
+            --exitstatus)
+                exitstatus=$2
+                shift
+                ;;
+            * )
+                echo "Unknown argument: $1"
+                print_usage
+                exit $STATE_UNKNOWN
+                ;;
+        esac
+        shift
+    done
+    
+    # If the source log file doesn't exist, exit
+    A=`ps -C nginx --no-header | wc -l`
+    if [ $A -eq 0 ];then
+        $ECHO "nginx is not running\n"
+        exit $STATE_CRITICAL
+    else
+        $ECHO "nginx is running with $A processes\n"
+        exit $STATE_OK
+    fi
+    
+    exit $exitstatus
+
+脚本需要可执行权限, 然后和上面添加权限一样添加入nagios即可
