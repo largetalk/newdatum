@@ -14,8 +14,10 @@ percona monitoring plugin 可参见http://www.percona.com/software/percona-monit
 安装
 =================
 
-in nagios server(ubuntu 12.04):
+in nagios server (ubuntu 12.04):
 --------------------------------------
+
+机器A， ip 172.16.21.119
 
   apt-get install libssl-dev openssl
 
@@ -121,7 +123,6 @@ in nagios server(ubuntu 12.04):
           host_name  uts-app-2
           service_description load
           check_command  check_nrpe!check_load
-          #check_command check_nrpe!check_load!6.0,5.0,4.0!15.0,8.0,6.0
           }
 
   echo "cfg_file=/usr/local/nagios/etc/objects/hostA.cfg" >> /usr/local/nagios/etc/nagios.cfg
@@ -134,6 +135,8 @@ see nagios web interface at http://localhost/nagios/
 
 in nagios client(ubuntu 12.04):
 --------------------------------------
+
+机器B, ip 172.16.21.59
 
   apt-get install libssl-dev openssl
 
@@ -181,9 +184,9 @@ in nagios client(ubuntu 12.04):
 
   vi /usr/local/nagios/etc/nrpe.cfg
 
-    allowed_hosts=127.0.0.1,192.168.1.91
+    allowed_hosts=127.0.0.1,172.16.21.119
 
-  echo 'nrpe:192.168.1.91' >> /etc/hosts.allow
+  echo 'nrpe:192.172.16.21.119' >> /etc/hosts.allow
 
   /usr/local/nagios/bin/nrpe -c /usr/local/nagios/etc/nrpe.cfg -d
 
@@ -227,3 +230,35 @@ some additions
     iptables -L
     service iptables save
     service iptables restart
+
+添加更多监控项
+===============================
+
+以添加check_procs举例
+
+B:
+
+  vim /usr/local/nagios/etc/nrpe.cfg ,add ::
+
+      command[check_procs]=/usr/local/nagios/libexec/check_procs -w 5:100 -c 2:1024
+
+  ps aux | grep nagios
+  
+  kill -9 xxxx #xxxx is nagios pid
+  
+  /usr/local/nagios/bin/nrpe -c /usr/local/nagios/etc/nrpe.cfg -d #重启
+
+A:
+
+  vim /usr/local/nagios/etc/objects/hostA.cfg ,add ::
+
+      define service{
+          use   generic-service
+          host_name  uts-app-2
+          service_description procs
+          check_command  check_nrpe!check_procs
+          }
+
+  service nagios reload
+
+   
