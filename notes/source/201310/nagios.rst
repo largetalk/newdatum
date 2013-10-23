@@ -368,3 +368,66 @@ vim /usr/local/nagios/libexec/check_nginx
     exit $exitstatus
 
 脚本需要可执行权限, 然后和上面添加权限一样添加入nagios即可
+
+邮件报警
+=========================
+
+http://my.oschina.net/u/615185/blog/69699
+
+nagios发邮件默认是使用本机的smtp服务，需要安装sendmail，但也可以更改commands.cfg中发邮件的命令，使用第三方邮件服务器，这样就不用自己搭建邮件服务器了，但也要注意第三方服务和网络的稳定性。
+
+这里我使用163做邮件服务器，用sendEmail_ 作为客户端来发送邮件
+
+.. _sendEmail: http://caspian.dotconf.net/menu/Software/SendEmail/
+
+163邮件服务器: smtp.163.com 用户 xxx@163.com 密码 xxx
+
+  wget http://caspian.dotconf.net/menu/Software/SendEmail/sendEmail-v1.56.tar.gz
+
+  tar xvf sendEmail-v1.56.tar.gz
+
+  cd sendEmail-v1.56
+
+  ./sendEmail -v -f xxx@163.com -t yyy@gmail.com -u "from nagios" -s smtp.163.com -xu xxx@163.com -xp xxx -m "test sendEmail" #test
+
+  如果发邮件成功则 cp sendEmail /usr/local/bin
+
+  chmod +x /usr/local/bin/sendEmail
+
+现在开始配置nagios中邮件报警
+
+  cd /usr/local/nagios/
+
+  vim etc/objects/contacts.cfg ::
+
+      define contact{
+          contact_name                    nagiosadmin             ; Short name of user
+          use                             generic-contact         ; Inherit default values from generic-contact template (defined above)
+          alias                           Nagios Admin            ; Full name of user
+
+          email                           yyy@gmail.com  ; <<***** CHANGE THIS TO YOUR EMAIL ADDRESS ******
+      }
+
+  在email那里加上自己的邮箱，如果有多个可以用逗号隔开
+
+  修改etc/objects/commands.cfg中notify_host_by_email和notify_service_by_email::
+
+    define command{
+        command_name    notify-host-by-email
+        command_line    /usr/bin/printf "%b" "***** Nagios *****\n\nNotification Type: $NOTIFICATIONTYPE$\nHost: $HOSTNAME$\nState: $HOSTSTATE$\nAddress: $HOSTADDRESS$\nInfo: $HOSTOUTPUT$\n\nDate/Time: $LONGDATETIME$\n" | /usr/local/bin/sendEmail -f xxx@163.com -t $CONTACTEMAIL$ -s smtp.163.com -u "** $NOTIFICATIONTYPE$ Host Alert: $HOSTNAME$ is $HOSTSTATE$ **" -xu xxx@163.com -xp xxx
+    }
+    
+    define command{
+        command_name    notify-service-by-email
+        command_line    /usr/bin/printf "%b" "***** Nagios *****\n\nNotification Type: $NOTIFICATIONTYPE$\n\nService: $SERVICEDESC$\nHost: $HOSTALIAS$\nAddress: $HOSTADDRESS$\nState: $SERVICESTATE$\n\nDate/Time: $LONGDATETIME$\n\nAdditional Info:\n\n$SERVICEOUTPUT$\n" | /usr/local/bin/sendEmail -f xxx@163.com -t $CONTACTEMAIL$ -s smtp.163.com -u "** $NOTIFICATIONTYPE$ Service Alert: $HOSTALIAS$/$SERVICEDESC$ is $SERVICESTATE$ **" -xu xxx@163.com -xp xxx
+    }
+
+  service nagios reload
+
+关闭某些服务或重启nagios client机器测试下报警功能
+  
+
+
+      
+
+    
