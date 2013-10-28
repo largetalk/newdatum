@@ -16,3 +16,16 @@ ubuntu桌面版直接点击字体文件就可以安装, 手动安装方式需要
     sudo mkfontdir
     sudo fc-cache -fv
 
+
+Using modernCV in Ubuntu
+=================================
+
+::
+
+    sudo apt-get install texlive texlive-latex-extra
+
+Ubuntu安装的modernCV比较旧，去这里http://www.ctan.org/tex-archive/macros/latex/contrib/moderncv 下载最新的modernCV包，解压到/usr/share/texlive/texmf-dist/tex/latex/目录下(替换原来的moderncv目录)
+
+然后执行下面命令重建latex包缓存::
+
+    sudo mktexlsr
