@@ -35,6 +35,7 @@ Contents:
    201310/systuning
    201310/fonts
    201310/gpg
+   201310/puppet
 
 
 
