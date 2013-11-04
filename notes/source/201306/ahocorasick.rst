@@ -48,3 +48,8 @@ aho-corasick定义:
 
 输出函数，指的是状态和模式串之间的一种关系。output(i)={P}，表示当状态机到达状态i时，模式串集合{P}中的所有模式串可能已经完成匹配。
 
+
+实现
+=====================
+
+使用redis特性实现的ac自动机算法，地址: https://github.com/largetalk/redis-ac-keywords
