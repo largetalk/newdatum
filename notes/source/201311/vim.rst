@@ -86,7 +86,7 @@ dwm.vim
 
 https://github.com/spolu/dwm.vim.git
 
-窗口管理, 使用 ::
+窗口管理, 使用方法： ::
 
     - `C-N` Creates a new window and place it in the master pane [M] & stacks all previous windows in the stacked pane [S]
     - `C-C` Close the current window if no unsaved changes
@@ -105,7 +105,7 @@ jedi-vim
 
 https://github.com/davidhalter/jedi-vim.git
 
-python自动补全，比pythoncomplete好用, 使用 ::
+python自动补全，比pythoncomplete好用, 使用方法： ::
 
     Completion <C-Space>
     Goto assignments <leader>g (typical goto function)
@@ -115,7 +115,7 @@ python自动补全，比pythoncomplete好用, 使用 ::
     Usages <leader>n (shows all the usages of a name)
     Open module, e.g. :Pyimport os (opens the os module)
 
-其实用<leader> 默认是 '\'
+其中<leader>的默认值是 '\\'
 
 pyfold 
 -------------------
