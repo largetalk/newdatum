@@ -37,6 +37,7 @@ Contents:
    201310/gpg
    201310/puppet
    201311/profile
+   201311/vim
 
 
 
