@@ -46,7 +46,7 @@ Single Field Indexes
 
 create: db.friends.ensureIndex({"name": 1})
 
-也可以给嵌入字段/子文档添加索引， 如有 ::
+也可以给嵌入字段添加索引， 如有 ::
 
     {"_id": ObjectId(...)
         "name": "John Doe"
@@ -58,4 +58,153 @@ create: db.friends.ensureIndex({"name": 1})
     }
 
     db.people.ensureIndex( { "address.zipcode": 1 } )
+
+给子文档添加索引, ::
+
+    {
+        _id: ObjectId("523cba3c73a8049bcdbf6007"),
+        metro: {
+            city: "New York",
+            state: "NY"
+        },
+        name: "Giant Factory"
+    }
+
+    db.factories.ensureIndex( { metro: 1 } )
+
+需要注意的是， 子文档查询需要顺序和内容完全匹配， 下句会匹配上面文档::
+
+    db.factories.find( { metro: { city: "New York", state: "NY" } } )
+
+而下句则不会匹配上面文档::
+
+    db.factories.find( { metro: { state: "NY", city: "New York" } } )
+
+Compound Indexes
+--------------------------------
+
+索引顺序::
+
+    db.events.ensureIndex( { "username" : 1, "date" : -1 } ) 支持
+
+    db.events.find().sort( { username: 1, date: -1 } ) 和
+    db.events.find().sort( { username: -1, date: 1 } )
+
+    不支持
+    db.events.find().sort( { username: 1, date: 1 } )
+
+索引前缀， 这个也和关系数据库索引一样， a，b，c联合索引， 使用a，b查询时会使用该索引， 使用b， c则不会
+
+Multikey Indexes
+---------------------------------
+
+::
+
+    {
+        userid: "xyz",
+        addr: [
+            {zip: "10086"},
+            {zip: "10000"}
+        ],
+    }
+
+    db.user.ensureIndex( { "addr.zip": 1} )
+
+Hashed Indexes
+----------------------------------
+
+tips. hashed indexes与multikey indexes不兼容
+
+create hashed indexes::
+
+    db.active.ensureIndex( { a: "hashed" } )
+
+索引属性
+------------------------
+
+TTL索引
+
+TTL索引是一种特殊索引， MongoDB可以自动删除collection中过期文档，这种机制非常适合某些消息如：机器产生的事件,日志以及只需在数据库存储一定时间的session消息。
+
+TTL索引有以下限制::
+
+    不支持组合索引
+    索引必须建立再日期类型字段上
+    如果该字段是数组， 则在索引上有多个日期类型数据，在最早的日期达到过期阈值，文档就会过期
+
+唯一索引::
+
+    db.addresses.ensureIndex( { "user_id": 1 }, { unique: true } )
+
+稀疏索引::
+
+    db.addresses.ensureIndex( { "xmpp_id": 1 }, { sparse: true } )
+
+background创建索引::
+
+    db.people.ensureIndex( { zipcode: 1}, {background: true} )
+
+创建唯一索引同时删除重复数据::
+
+    db.accounts.ensureIndex( { username: 1 }, { unique: true, dropDups: true } )
+
+指定索引名称::
+
+    db.products.ensureIndex( { item: 1, quantity: -1 } , { name: "inventory" } )
+
+drop index::
+
+    db.accounts.dropIndex( { "tax-id": 1 } )
+
+rebuild index::
+
+    db.collection.reIndex()
+
+force use a index::
+
+    db.people.find( { name: "John Doe", zipcode: { $gt: 63000 } } } ).hint( { zipcode: 1 } )
+
+Text Search 指南
+-------------------------
+
+因为text search现在还是再beta阶段，所以先要显式开启text search特性::
+
+    mongod --setParameter textSearchEnabled=true
+
+在字符串或字符串数组字段上创建text索引， 如果在多个字段上创建text索引，可以显示指定字段也可以用匹配符($**) ::
+
+    db.collection.ensureIndex(
+                               {
+                                 subject: "text",
+                                 content: "text"
+                               }
+                            )
+
+    db.collection.ensureIndex(
+                               { "$**": "text" },
+                               { name: "TextIndex" }
+                             )
+
+search::
+
+    db.quotes.runCommand( "text", { search: "TOMORROW" } ) # a Term
+
+    db.quotes.runCommand( "text", { search: "tomorrow largo" } ) #any of the search term, like OR
+
+    db.quotes.runCommand( "text", { search: "\"and tomorrow\"" } ) #搜索匹配短语and tomorrow的
+
+    db.quotes.runCommand( "text" , { search: "tomorrow -petty" } ) #匹配有tomorrow没有petty的
+
+使用project选项指定返回的字段::
+
+    db.quotes.runCommand( "text", { search: "tomorrow", project: { "src": 1 } } ) #只返回_id和src字段
+
+使用filter选项指定其他查询条件::
+
+    db.quotes.runCommand( "text", { search: "tomorrow", filter: { speaker : "macbeth" } } )
+
+指定语言::
+
+    db.quotes.runCommand( "text", { search: "amor", language: "spanish" } )
+
 
