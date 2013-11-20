@@ -270,3 +270,47 @@ tail calls:
       return factorial_helper(x, 1)
     end
 
+Thread
+====================
+
+lua的thread其实是协程
+
+yielding:
+
+.. code-block:: lua
+
+    > function foo()
+    >>   print("foo", 1)
+    >>   coroutine.yield()
+    >>   print("foo", 2)
+    >> end
+    >
+using coroutine.create(fn) to create a coroutine
+
+.. code-block:: lua
+
+    > co = coroutine.create(foo) -- create a coroutine with foo as the entry
+    > = type(co)                 -- display the type of object "co"
+    thread
+
+thread state:
+
+.. code-block:: lua
+
+    > = coroutine.status(co)
+    suspended --The state suspended means that the thread is alive, and as you would expect, not doing anything.
+
+use coroutine.resume() to start the thread, lua will enter the thread and leave when the thread yields
+
+.. code-block:: lua
+
+    > = coroutine.resume(co)
+    foo     1
+    true
+    > = coroutine.resume(co)
+    foo     2
+    true
+    > = coroutine.status(co)
+    dead
+    > = coroutine.resume(co)
+    false   cannot resume dead coroutine
