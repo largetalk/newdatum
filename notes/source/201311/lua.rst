@@ -200,3 +200,73 @@ table是引用类型，意识是赋值给其他变量时不会产生copy数据
 解决办法是把item存在key中，value设置一个dummy值（如true），你就可以像使用无序集合那样来使用table，快速的插入，删除和查找。
 
 这样做的缺点是不好得到item总数（需要循环），也不能存储相同item两次
+
+Functions
+======================
+
+lua中定义函数如下::
+
+    function ( args ) body end
+
+return value:
+
+.. code-block:: lua
+
+    > f = function ()
+    >>  return "x", "y", "z" -- return 3 values
+    >> end
+    > a, b, c, d = f() -- assign the 3 values to 4 variables. the 4th variable will be filled with nil
+    > = a, b, c, d
+    x y z nil
+    > a, b = (f()) -- wrapping a function call in () discards multiple return values
+    > = a, b
+    x, nil
+    > = "w"..f() -- using a function call as a sub-expression discards multiple returns
+    wx
+    > print(f(), "w") -- same when used as the arg for another function call...
+    x w
+    > print("w", f()) -- ...except when it's the last arg
+    w x y z
+    > print("w", (f())) -- wrapping in () also works here like it does with =
+    w x
+    > t = {f()} -- multiple returns can be stored in a table
+    > = t[1], t[2], t[3]
+    x y z
+
+参数个数可变:
+
+.. code-block:: lua
+
+    > f = function (x, ...)
+    >>  x(...)
+    >> end
+    > f(print, 1,2,3)
+    1 2 3
+
+    > f=function(...) print(select("#", ...)) print(select(3, ...)) end
+    > f(1, 2, 3, 4, 5)
+    5
+    3 4 5
+
+named function:
+
+.. code-block:: lua
+
+    >function f(...) end -- equivalent to 
+    >f = function(...) end 
+
+tail calls:
+
+.. code-block:: lua
+
+    function factorial_helper(i, acc)
+      if i == 0 then
+        return acc
+      end
+      return factorial_helper(i-1, acc*i)
+    end
+    
+    function factorial(x)
+      return factorial_helper(x, 1)
+    end
+
