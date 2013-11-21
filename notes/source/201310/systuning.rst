@@ -252,3 +252,34 @@ others::
     net.core.wmem_max = 8388608
     net.core.netdev_max_backlog = 5000
     net.ipv4.tcp_window_scaling = 1
+
+文件数限制
+================
+
+在繁忙的服务器上，必须要修改文件数限制，否则很快就会遇见too many open file的错误
+
+使用limit -a 可以查看当前文件数限制， limit -n xxxx 修改的是当期用户当期环境的限制，重启和退出用户就恢复了
+
+与文件数相关的有三处
+
+内核参数fs.file-max ::
+
+    file-max的值是内核所能分配到的最大句柄数。
+
+内核参数fs.file-nr ::
+
+    它有三个值：
+      已分配文件句柄的数目
+      已使用文件句柄的数目
+      文件句柄的最大数目
+    该参数只读，不修改
+
+配置文件 /etc/security/limits.conf ，加入下面两行 ::
+
+    *　　soft　　nofile　　65536
+    *　　hard　　nofile　　65536
+
+Nginx配置优化
+====================
+
+介绍nginx变量和配置很好的文档： http://openresty.org/download/agentzh-nginx-tutorials-zhcn.html
