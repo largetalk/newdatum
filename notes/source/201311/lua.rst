@@ -11,6 +11,8 @@ lua是动态类型语言，变量无须定义
 
 Numbers:
 
+包括整数，无精度限制整数，单精度浮点数，双精度浮点数，复数
+
 .. code-block:: lua
 
     >a = 1
@@ -19,12 +21,20 @@ Numbers:
     >c = 0.7
     >print(c)
 
+字符和数字转换:
+
+.. code-block:: lua
+
+    > = tonumber("123") + 25
+    > = tonumber("123.456e5")
+
+
 Strings:
 
 .. code-block:: lua
 
     >print("hello")
-    >who = 'lua user' -- 字符串可以使用"或'
+    >who = 'lua user' -- 字符串可以使用"或' 多行用[[ ]]
     >print(who)
     >print("hello " .. who)  -- 拼接字符串使用 .. 而不是 +
 
@@ -314,3 +324,49 @@ use coroutine.resume() to start the thread, lua will enter the thread and leave 
     dead
     > = coroutine.resume(co)
     false   cannot resume dead coroutine
+
+Control Structure
+============================
+
+.. code-block:: lua
+
+    if condition then
+        block
+    elseif condition then
+        block
+    else
+        block
+    end
+
+    while condition do
+        block
+    end
+
+    repeat
+        block
+    until condition
+
+    for variable = start, stop, step do
+        block
+    end
+
+    for var1, var2 in iterator do
+        block
+    end
+
+    while true do
+        if condition then
+            break
+        end
+    end
+
+    for i=1, 10 do
+        if i > 3 then 
+            goto continue
+        end
+        block
+        ::continue:: -- a name surrounded in :: :: is a goto label
+    end
+
+    condition and block1 or block2
+
