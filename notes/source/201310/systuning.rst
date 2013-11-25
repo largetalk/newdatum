@@ -402,6 +402,19 @@ nginx.conf
         proxy_read_timeout 60s;
         #nginx传送请求到后端最大时间，该timeout并不是指整个传输时间，而是指两次写之间的时间
         proxy_send_timeout 30s;
+
+        ##
+        # open file optimize
+        ##
+
+        #max指定缓存最大文件数，inactive指定缓存失效时间，如在这段时间文件没被下载，移除缓存
+        open_file_cache max=102400 inactive=20s;
+        #指定多长时间检查一下open_file_cache中文件的有效性
+        open_file_cache_valid    60s;
+        #指定了在open_file_cache指令无效的参数中一定的时间范围内可以使用的最小文件数， 如果使用更大的值，文件描述符在cache中总是打开状态
+        open_file_cache_min_uses 1;
+        #是否cache搜索文件的错误
+        open_file_cache_errors   on;
     
     
     	##
