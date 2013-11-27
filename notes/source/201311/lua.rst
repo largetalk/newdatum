@@ -370,3 +370,49 @@ Control Structure
 
     condition and block1 or block2
 
+Metamethods
+=====================
+
+metatable是一个包含一些metamethod的table，通过setmetatable函数把其和某个对象关联起来，那个对象就具备某些功能或能处理某些事件。因为lua是动态语言，给对象添加函数也不是什么大不了的事。
+
+.. code-block:: lua
+
+    local x = {value = 5}
+    
+    local mt = {
+        __add = function (lhs, rhs) -- "add" event handler
+            return { value = lhs.value + rhs.value }
+        end
+    }
+    
+    setmetatable(x, mt) -- use "mt" as the metatable for "x"
+    
+    local y = x + x
+    
+    print(y.value) --> 10
+    
+    local z = y + y -- error, y doesn't have our metatable. this can be fixed by setting the metatable of the new object inside the metamethod'
+
+getmetatable :
+
+.. code-block:: lua
+
+    local y = (getmetatable(x).__add(x, x)) -- x + x
+
+some event：
+
+.. code-block:: lua
+
+    __index
+    __newindex
+    __add
+    __eq
+    __lt
+    __le
+    __metatable
+
+Environments
+====================
+
+
+
