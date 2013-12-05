@@ -425,4 +425,7 @@ nginx.conf
     	include /etc/nginx/sites-enabled/*;
     }
     
-    
+
+nginx也可做反向代理缓存, http://wiki.nginx.org/HttpProxyModule#proxy_cache_path
+
+涉及的配置指令有proxy_cache_path, proxy_cache_key, proxy_cache, proxy_cache_valid
