@@ -2,7 +2,7 @@
 lua
 ================
 
-先安装官网安装好lua解释器
+先按照官网安装好lua解释器
 
 lua类型
 =================
@@ -414,5 +414,93 @@ some event：
 Environments
 ====================
 
+lua的全局环境是一个table，全局变量就存在这个table里，我们可以为每个函数使用不同的table，这样就能看到不同的全局变量。
 
- 
+默认的全局table存储在一个叫“_G"的变量下
+
+.. code-block:: lua
+
+    print(_ENV == _G) -- prints true, since the default _ENV is set to the global table
+    
+    a = 1
+    
+    local function f(t)
+      local print = print -- since we will change the environment, standard functions will not be visible
+    
+      local _ENV = t -- change the environment. without the local, this would change the environment for the entire chunk
+    
+      print(getmetatable) -- prints nil, since global variables (including the standard functions) are not in the new env
+    
+      a = 2 -- create a new entry in t, doesn't touch the original "a" global
+      b = 3 -- create a new entry in t
+    end
+    
+    local t = {}
+    f(t)
+    
+    print(a, b) --> 1 nil
+    print(t.a, t.b) --> 2 3'
+
+Modules
+========================
+
+create an example file mymodule.lua
+
+.. code-block:: lua
+
+    local mymodule = {}
+
+    function mymodule.foo()
+        print("hello world!")
+    end
+
+    return mymodule
+
+So that you can require the same module in different files without re-running the module code, Lua caches modules in the package.loaded table.
+
+to actually reload the module, you need::
+
+    package.loaded.mymodule = nil
+    mymodule = require "mymodule"
+
+other ways to create a module::
+
+    local mymodule = {}
+    
+    local function private()
+        print("in private function")
+    end
+    
+    function mymodule.foo()
+        print("Hello World!")
+    end
+    
+    function mymodule.bar()
+        private()
+        mymodule.foo() -- need to prefix function call with module
+    end
+    
+    return mymodule
+
+or 我比较喜欢的方式::
+
+    local mymodule = {}
+    
+    local function private()
+        print("in private function")
+    end
+    
+    local function foo()
+        print("Hello World!")
+    end
+    mymodule.foo = foo
+    
+    local function bar()
+        private()
+        foo()
+    end
+    mymodule.bar = bar
+    
+    return mymodule
+
+package.path (for modules written in Lua) and package.cpath (for modules written in C) are the places where Lua looks for modules. 
