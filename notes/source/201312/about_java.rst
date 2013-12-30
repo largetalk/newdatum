@@ -21,3 +21,30 @@ maven入门：http://www.oracle.com/technetwork/cn/community/java/apache-maven-g
 介绍storm很好的博客 http://xumingming.sinaapp.com/138/twitter-storm%E5%85%A5%E9%97%A8/
 
 storm-starter项目： https://github.com/nathanmarz/storm-starter
+
+maven
+===============
+
+maven用起来还是蛮简单的
+
+创建项目::
+
+    mvn archetype:generate -B -DgroupId=xxxx ....
+
+编译::
+
+    mvn clean package
+
+mvn只有一个pom.xml配置文件，要改都改这个文件，比如加个depedency啥。
+
+struts2
+=================
+
+创建struts项目::
+
+    mvn archetype:generate -B -DgroupId=com.mycompany.mysystem \\
+                              -DarchetypeGroupId=org.apache.struts \\
+                              -DarchetypeArtifactId=struts2-archetype-angularjs \\
+                              -DarchetypeVersion=2.3.16 \\
+
+struts2是一个mvc web开发框架
