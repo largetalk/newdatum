@@ -41,6 +41,7 @@ Contents:
    201311/mongo
    201311/lua
    201312/rabbitmq_ha
+   201312/git
 
 
 
