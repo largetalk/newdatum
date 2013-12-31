@@ -43,6 +43,7 @@ Contents:
    201312/rabbitmq_ha
    201312/git
    201312/mongo_replica
+   201312/summary
 
 
 
