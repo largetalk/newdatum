@@ -41,6 +41,8 @@ Contents:
    201311/mongo
    201311/lua
    201312/rabbitmq_ha
+   201312/rabbitmq_cluster
+   201312/haproxy_ha
    201312/git
    201312/mongo_replica
    201312/summary
