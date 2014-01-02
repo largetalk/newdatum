@@ -43,7 +43,7 @@
 
 客户端包括“producer app”和“consumer app”
 
- 队列创建
+队列创建
 -----------------
 
 在代码中创建队列时，需要声明策略("x-ha-policy":"all")，如使用Kombu开发时::
