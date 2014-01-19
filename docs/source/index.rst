@@ -46,6 +46,7 @@ Contents:
    201312/git
    201312/mongo_replica
    201312/summary
+   201401/thrift
 
 
 
