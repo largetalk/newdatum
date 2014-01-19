@@ -117,6 +117,8 @@ Conclusion
 
 I hope this article helps you decide which Thrift server is right for you. I think TThreadedSelectorServer would be a safe choice for most of the use cases. You might also want to consider TThreadPoolServer if you can afford to run lots of concurrent threads. Feel free to send me email at mapkeeper-users@googlegroups.com or post your comments here if you have any questions/comments.
 
+我希望这篇文章能帮你决定哪种Thrift server适合你。 我觉得对于多数情况TThreadedSelectorServer是个安全的选择。如果你你可以接受运行大量并发进程，你也可以考虑TThreadPoolServer。
+
 Appendix A: Hardware Configuration
 ========================================
 
