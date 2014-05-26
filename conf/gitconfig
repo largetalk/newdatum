@@ -6,7 +6,7 @@
     grep = auto
 [user]
 	name = Arthur
-    email = wangzhiqing@ata.net.cn
+    email = arthur_wang@adsame.com
 [alias]
       st = status
       ci = commit
