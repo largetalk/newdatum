@@ -194,6 +194,8 @@ Optimal CPU utilization with respect to processes
 理想情况,我们喜欢让cpu保持适度繁忙.任何时候使用cpu而不是实际的任何都是浪费cpu时间.
 
 
+这儿有一个cpu利用率迭代优化的模型
+* 启动一定数量的 线程/进程(可能略大于你的cpu核心数)
 
 ::
 
@@ -224,7 +226,6 @@ Ideal models for reducing context switching
 ...
 
 
-===========================================
 What Your Computer Does While You Wait
 ===========================================
 
