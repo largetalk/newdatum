@@ -187,4 +187,113 @@ Thread Factories
 
 Extending ThreadPoolExecutor
 
+chapter 10 avoiding liveness hazards
+==========================================
 
+deadlock
+
+-锁顺序导致的死锁（互相等待）
+-动态锁顺序导致的死锁
+-合作对象之间导致的死锁
+-资源导致的死锁
+
+避免和诊断死锁
+
+-尝试超时锁
+-通过thread dumps分析死锁
+
+其他活动危险
+
+-饥饿
+-弱响应能力
+-活锁
+
+chapter 11 performance and scalability
+=========================================
+
+性能 vs 扩展性
+
+评估性能权衡
+
+amdahl's law
+
+cost introduced by thread
+
+-context switching
+-memory synchronization
+-blocking
+
+reduce lock contention
+
+there are three ways to reduce lock contention
+
+-reduce the duration for which locks are held
+-reduce the frequecy with which locks are requested, or 
+-replace exclusive locks with coordination mechanisms that permit greater concurrency
+
+-缩小锁范围
+-减小锁粒度
+-分解锁
+-避免过热域
+-选择高级锁替代 比如 ReadWriteLock
+-监视cpu利用率
+-和对象池说no
+
+reduce context switch overhead
+
+chapter 13 Explicit Locks
+================================
+
+Lock and ReentrantLock
+
+lock.trylock()
+
+Read-write lock
+
+chapter 14 building custom synchronizers
+============================================
+
+ArrayBlockingQueue
+
+wait, notifyAll
+
+using condition queues
+
+-the condition predicate
+-waking up too soon
+-missed signals
+-notification
+
+AbstractQueueSynchronizer
+
+chapter 15 atomic variables and non-blocking synchronization
+==============================================================
+
+CAS
+
+a non-blocking counter
+
+atomic variable classes
+
+non-blocking algorithms
+
+chapter 16 the java memory model
+====================================
+
+reording
+
+happens-before
+
+￼
+The rules for happens-before are::
+    Program order rule. Each action in a thread happensbefore every action in that thread that comes later in the programorder.
+    Monitor lock rule.An unlock on a monitor lock happens-before every subsequent lock on that same monitor lock.[3]
+    Volatile variable rule.A write to a volatile field happens-befor eevery subsequent read of that same field.[4]
+    Thread start rule.A call to Thread.start on a thread happens-before every action in the started thread.
+    Thread termination rule. Any action in a thread happens-before any other thread detects that thread has terminated,either by successfully return from Thread.join or by Thread.isAlive returning false.
+    Interruption rule.A thread calling interrupt on another thread happens-before the interrupted thread detects the interrupt(either by having InterruptedException thrown,or invoking isInterrupted or interrupted).
+    Finalizer rule.The end of aconstructor for an object happens-before the start of the finalizer for that object.
+    Transitivity.If A happens-before B,and B happens-before C,then A happens-before C.
+
+double check locking 不是好模式
+ 
