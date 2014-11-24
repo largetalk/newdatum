@@ -26,6 +26,33 @@ right-rotate(t):
   s[t] = s[left[t]] + s[right[t]] + 1
   t = k
 
+maintain:
+
+当插入和删除一个节点之后，sbt的性质就有可能被改变，这时需要用maintain来修复
+
+case 1：s[left[left[t]]] > s[right[t]]
+
+  先right-rotate(t)
+  这之后，有时，这棵树可能还不是SBT， 所以仍有必要调用maintain(t)
+  节点L的右子树可能被连续调整，所以可能由于性质被破坏需要运行maintain(L)
+
+case 2: s[right[left[t]]] >= s[right[t]]
+
+  先left-rotate(L)
+  然后执行right-rotate(t)
+  maintain(L) 和 maintain(T)
+  在第3步之后，子树都已经是SBT，但新根节点B可能还不是， 所以maintain(B)
+
+case 3: s[right[right[t]]] > s[left[t]]
+
+  与case 1对称
+
+case 4: s[left[right[t]]] > s[left[t]]
+
+  与case 2对称
+
+
+
 quick sort
 ==============
 
