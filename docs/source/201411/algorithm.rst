@@ -113,7 +113,6 @@ insert(t, v):
   maintain(t, v>=key[t])
     
 
-
 quick sort
 ==============
 
@@ -138,3 +137,41 @@ void qsort(int a[], int low, int high) {
   qsort(a, low, first - 1);
   qsort(a, first + 1, high);
 }
+
+
+inorder traversal tree
+============================
+
+travel(Tree* root):
+  stack<Tree*> st;
+  Tree* t = root;
+  while (1) {
+    while (t) {
+      st.push(t)
+      t = t->left;
+    }
+    if (st.isempty()) {
+      break;
+    }
+    t = st.top();
+    print t
+    st.pop()
+    t = t->right;
+  }
+ 
+preorder traversal tree
+=============================
+
+travel(Tree* root):
+  stack<Tree*> st;
+  Tree* t = root;
+  while (1) {
+    while(t) {
+     st.push(t);
+     print t
+     t = t->left
+    }
+    t = st.top()
+    st.pop()
+    t = t->right;
+  }
