@@ -36,3 +36,6 @@ kafka desing facts:
   in kafka 0.8x, load balancing is achieved through kafka metadata api
   producers also have an option to choose between asynchronous or synchronous model for send message to a broker
 
+kafka compression in kafka
+
+  data is compressed by message producer using either gzip or snappy
