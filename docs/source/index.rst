@@ -49,6 +49,7 @@ Contents:
    201401/thrift
    201403/bigdata
    201405/cpu
+   201412/ictclas
 
 
 
