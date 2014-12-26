@@ -32,3 +32,24 @@ Secondary NameNode: periodically synchronizes with NameNode block index
 DataNode: manages the data blocks it receives from the NameNode
 
 LZO codec: https://github.com/kevinweil/hadoop-lzo
+
+SequenceFile format: SequenceFileOutputFormat
+
+Avro serialize
+thrift serialize
+protocol serialize
+
+elephant bird: https://github.com/kevinweil/elephant-bird
+
+hdfs-site.xml <name>dfs.replication</name>
+
+change the replication factor on a per-file basis using hadoop fs shell:
+hadoop fs -setrep -w 3 /my/file
+hadoop fs -setrep -w 3 -R /my/dir
+
+hdfs-site.xml <name>dfs.block.size</name>
+
+extracting and transforming data
+=========================================
+
+
