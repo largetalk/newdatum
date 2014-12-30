@@ -227,4 +227,92 @@ python + streaming
 
 using multipleOutputs in MapReduce to name output files
 
+create custom hadoop writeable and inputformat
+
+performing common tasks using hive,pig and MapReduce
+=================================================================
+
+hive (external table):
+
+DROP TABLE IF EXISTS weblog_entries;
+CREATE EXTERNAL TABLE weblog_entries (
+    md5 STRING,
+    url STRING,
+    request_date STRING,
+    request_time STRING,
+    ip STRING
+)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY '\t' LINES TERMINATED BY '\n'
+LOCATION '/input/weblog/';
+
+ps :
+
+  LOCATION must point to a directory, not a file
+  Dropping an external table does not delete the data stored in the table
+  You can add data to the path specified by LOCATION
+
+---------
+
+CREATE TABLE weblog_entries_with_url_length AS
+SELECT url, request_date, request_time, length(url) as url_length
+FROM weblog_entries;
+
+ps:
+
+  CREATE TABLE AS cannot be used to create external tables
+  DROP temporary tables
+
+---------
+
+SELECT concat_ws('_', request_date, request_time) FROM weblog_entries;
+
+--------
+
+SELECT wle.*, itc.country FROM weblog_entries wle JOIN ip_to_country itc ON wle.ip = itc.ip;
+
+ps:
+  Hive supports multitable joins
+  The ON operator for inner joins does not support inequality conditions
+
+
+Use NullWritable to avoid unnecessary serialization overhead
+
+DistributedCache.addCacheFile(new Path("/cache_files/news_keywords.txt").toUri(), conf);""))
+
+Use the distributed cache to pass JAR dependencies to map/reduce task JVMs
+
+Distributed cache does not work in local jobrunner mode
+
+advanced join
+=========================
+
+nobots_weblogs = LOAD '/user/hadoop/apache_nobots_tsv.txt' AS (ip: chararray, timestamp:long, page:chararray, http_status:int, payload_size:int, useragent:chararray);
+ip_country_tbl = LOAD '/user/hadoop/nobots_ip_country_tsv.txt' AS (ip:chararray, country:chararray);
+weblog_country_jnd = JOIN nobots_weblogs BY ip, ip_country_tbl BY ip USING 'replicated';
+
+-------
+
+weblog_country_jnd = JOIN nobots_weblogs BY ip, ip_country_tbl BY ip USING 'merge';
+
+------
+
+weblog_country_jnd = JOIN nobots_weblogs BY ip, ip_country_tbl BY ip USING 'skewed';
+
+------
+
+SELECT /*+ MAPJOIN(nh)*/ acled.event_date, acled.event_type, nh.description
+FROM acled_nigeria_cleaned acled
+JOIN nigeria_holidays nh
+ON (substr(acled.event_date, 6) = nh.yearly_date);
+
+-------
+
+SELECT acled.event_date, acled.event_type, vips.name, vips.description as pers_desc, vips.birthday
+FROM nigeria_vips vips
+FULL OUTER JOIN acled_nigeria_cleaned acled
+ON (substr(acled.event_date,6) = substr(vips.birthday,6));
+
+Big Data Analysis
+==============================
+
 
