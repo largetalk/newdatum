@@ -315,4 +315,80 @@ ON (substr(acled.event_date,6) = substr(vips.birthday,6));
 Big Data Analysis
 ==============================
 
+in hive:
+
+DISTRIBUTE BY : Rows with matching column values will partition to the same reducer. When used alone, it does not guarantee sorted input to the reducer.
+
+SORT BY : This dictates which columns to sort by when ordering reducer input records
+
+CLUSTER BY : This is a shorthand operator to perform both SORT BY and DISTRIBUTE BY operations on a group of columns.
+
+ORDER BY : This is similar to the traditional SQL operator. Sorted order is maintained across all of the output from every reducer. Use this with caution as it can force all of the output records to a single reducer to perform the sorting. Usage with LIMIT is strongly recommended.
+
+Advanced Big Data Analysis
+==================================
+
+Giraph : PageRank, Single-Source Shortest-path, distributed breadth-first search
+http://giraph.apache.org/
+BSP : http://en.wikipedia.org/wiki/Bulk_synchronous_parallel
+Pregel : http://kowshik.github.io/JPregel/pregel_paper.pdf
+
+------------
+
+Mahout:  
+
+Collaborative filter
+
+mahout recommenditembased --input /user/hadoop/books/ cleaned_book_ratings.txt --output /user/hadoop/books/recommended --usersFile /user/hadoop/books/cleaned_book_users.txt -s SIMILARITY_LOGLIKELIHOOD
+
+clustering with apache mahout
+------------------------------------
+
+1. convert the shakespeare text documents into the hadoop sequenceFile format
+
+mahout seqdirectory --input /user/hadoop/shakespeare_text --output /user/hadoop/shakespeare-seqdir --charset utf-8
+
+2. convert the text contents of the SequenceFile into a vector
+
+mahout seq2sparse --input /user/hadoop/shakespeare-seqdir --output /user/hadoop/shakespeare-sparse --namedVector -ml 80 -ng 2 -x 70 -md 1 -s 5 -wt tfidf -a org.apache.lucene.analysis.WhitespaceAnalyzer
+
+3. Run the k-means clustering algorithm on the document vectors
+
+mahout kmeans --input /user/hadoop/shakespeare-sparse/tfidf-vectors --output /user/hadoop/shakespeare-kmeans/clusters --clusters /user/hadoop/shakespeare-kmeans/initialclusters --maxIter 10 --numClusters 6 --clustering –overwrite
+
+4. To check the clusters identified by Mahout, use the following command:
+
+mahout clusterdump --seqFileDir /user/hadoop/shakespeare-kmeans/clusters/clusters-1-final --numWords 5 --dictionary /user/hadoop/shakespeare-sparse/dictionary.file-0 --dictionaryType sequencefile
+
+sentiment classification with apache mahout
+-------------------------------------------------
+
+1. reorg file
+
+./reorg_data.py txt_sentoken train test
+
+2. prepare the dataset for the mahout classifer
+
+mahout prepare20newsgroups -p train -o train_formated -a org.apache.mahout.vectorizer.DefaultAnalyzer -c UTF-8
+
+mahout prepare20newsgroups -p test -o test_formated -a org.apache.mahout.vectorizer.DefaultAnalyzer -c UTF-8
+
+3. Place the train_formated and test_formated folders into HDFS
+
+hadoop fs –put train_formated /user/hadoop/
+
+hadoop fs –put test_formated /user/hadoop/
+
+4. train the naive Bayes classifier using the train_formated dataset
+
+mahout trainclassifier -i /user/hadoop/train_formated -o /user/hadoop/reviews/naive-bayes-model -type bayes -ng 2 -source hdfs
+
+5. test
+
+mahout testclassifier -m /user/hadoop/reviews/naive-bayes-model -d prepared-test -type bayes -ng 2 -source hdfs -method sequential
+
+
+Debugging
+===============================
+
 
