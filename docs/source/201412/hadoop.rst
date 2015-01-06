@@ -391,4 +391,32 @@ mahout testclassifier -m /user/hadoop/reviews/naive-bayes-model -d prepared-test
 Debugging
 ===============================
 
+Counters
 
+context.getCounter(BadRecords.INVALID_NUMBER_OF_COLUMNS).increment(1);
+
+MRUnit
+---
+
+Developing and testing MapReduce jobs running in local mode
+---
+
+Enabling MapReduce jobs to skip bad records
+---
+
+SkipBadRecords.setMapperMaxSkipRecords(conf, 100);
+SkipBadRecords.setReducerMaxSkipGroups(conf, 100);
+
+or
+
+JobConf.setMaxMapAttempts() and JobConf.setMaxReduceAttempts()
+
+Using Counters in a streaming job
+---
+
+write data to stderr
+
+Updating task status messages to display debugging information
+---
+
+context.setMessage("user custom message");
