@@ -5,7 +5,7 @@ from gevent import monkey
 
 monkey.patch_all()
 
-shgps = ['sh601179', 'sh600219', 'sz000725']
+shgps = ['sh601179', 'sh600219', 'sz000725', 'sz000728', 'sh601318', 'sh600362', 'sz000623']
 url_head = 'http://hq.sinajs.cn/list='
 
 if sys.version_info[0] == 3:
