@@ -15,7 +15,7 @@ COOKIE = "s=8d912ogvqt; xq_a_token=569d9629692c45185ba30f9cfd597d87fa93189a; xqa
 
 YI = 100000000
 
-shgps = ['sh600219', 'sh601988', 'sh601318', 'sz000625', 'sh600518', 'sh600030', 'sh600000', 'sh601166']
+shgps = ['sz000002', 'sh601988', 'sh601318', 'sz000625', 'sh600518', 'sh600030', 'sh600000', 'sh601166']
 url_head = 'http://hq.sinajs.cn/list='
 
 if sys.version_info[0] == 3:

@@ -1,5 +1,5 @@
 
-all: git dict tmux
+all: git dict simpleGP tmux
 
 cur_path=$(shell pwd)
 git: 
@@ -15,6 +15,11 @@ dict:
 sfz:
 	@echo '##############install sfz utility###############'
 	sudo ln -sf $(cur_path)/utility/sfz.py /usr/local/bin/sfz
+	@echo
+
+simpleGP:
+	@echo '##############install simpleGP utility###############'
+	sudo ln -sf $(cur_path)/utility/SGP.py /usr/local/bin/simpleGP
 	@echo
 
 tmux:
