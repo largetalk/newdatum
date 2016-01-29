@@ -19,7 +19,7 @@ sfz:
 
 simpleGP:
 	@echo '##############install simpleGP utility###############'
-	sudo ln -sf $(cur_path)/utility/SGP.py /usr/local/bin/simpleGP
+	sudo ln -sf $(cur_path)/utility/simpleGP.py /usr/local/bin/SGP
 	@echo
 
 tmux:

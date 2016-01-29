@@ -27,13 +27,11 @@ def print_current_price(id):
     price = data[3]
     t = data[31]
 
-    print price
+    return price
     
     #print('id: %s, %s, c: %r, t: %s' % (id, name, price, t))
 
 
-if len(sys.argv) <= 1:
-    print 'input code'
-    exit(-1)
-else:
-    print_current_price(sys.argv[1])
+ct = float(print_current_price('600674'))
+xy = float(print_current_price('601166'))
+print 'ct:', ct, ' xy:', xy, ' cost:', (ct-9.49)*1700 - (xy-15.92)*1000 

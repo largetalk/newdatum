@@ -11,8 +11,7 @@ import urllib2
 
 REFER_URL = 'http://xueqiu.com/S/%s/GSJJ'
 UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.115 Safari/537.36'
-COOKIE = "s=8d912ogvqt; xq_a_token=569d9629692c45185ba30f9cfd597d87fa93189a; xqat=569d9629692c45185ba30f9cfd597d87fa93189a; xq_r_token=c1dc5a9dbd9ff6e4d5723aee833d302cd9f75f20; xq_is_login=1; u=2079082878; xq_token_expire=Fri%20Sep%2025%202015%2009%3A41%3A14%20GMT%2B0800%20(CST); bid=a035a6b006ec49f7f248a63a965693a9_idzcso4a; Hm_lvt_1db88642e346389874251b5a1eded6e3=1442802041,1442802052,1442802081,1442996023; Hm_lpvt_1db88642e346389874251b5a1eded6e3=1442998578; __utmt=1; __utma=1.1133627189.1440985256.1442991771.1442996023.50; __utmb=1.8.10.1442996023; __utmc=1; __utmz=1.1442996023.50.3.utmcsr=baidu|utmccn=(organic)|utmcmd=organic"
-
+COOKIE = "s=r9711ebjgl; bid=a035a6b006ec49f7f248a63a965693a9_igrppfx4; webp=1; snbim_minify=true; xq_a_token=fe77b3a0e8f0b7b99a66fd0b0d847ce2cc0146d5; xqat=fe77b3a0e8f0b7b99a66fd0b0d847ce2cc0146d5; xq_r_token=a6cc21a75c206257e9e5d43dc232ae6745201660; xq_is_login=1; u=2079082878; xq_token_expire=Fri%20Jan%2029%202016%2009%3A43%3A32%20GMT%2B0800%20(CST); __utmt=1; __utma=1.1085688491.1447034296.1451877159.1451888375.161; __utmb=1.1.10.1451888375; __utmc=1; __utmz=1.1448263777.36.2.utmcsr=baidu|utmccn=(organic)|utmcmd=organic; Hm_lvt_1db88642e346389874251b5a1eded6e3=1451026184; Hm_lpvt_1db88642e346389874251b5a1eded6e3=1451888375"
 YI = 100000000
 
 shgps = ['sz000002', 'sh601988', 'sh601318', 'sz000625', 'sh600518', 'sh600030', 'sh600000', 'sh601166']
