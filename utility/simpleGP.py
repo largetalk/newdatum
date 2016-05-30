@@ -17,7 +17,7 @@ else:
 def print_current_price(id):
     if id.startswith('00') or id.startswith('15') or id.startswith('16'):
         id = 'sz' + id
-    elif id.startswith('60') or id.startswith('510'):
+    elif id.startswith('60') or id.startswith('51'):
         id = 'sh' + id
     url = url_head + id
     content = urlopen(url).read()
