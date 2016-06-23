@@ -14,7 +14,7 @@ UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_5) AppleWebKit/537.36 (KHTML,
 COOKIE = "s=2glu12ch3o; bid=a035a6b006ec49f7f248a63a965693a9_ij9bbbhc; webp=1; Hm_lvt_1db88642e346389874251b5a1eded6e3=1458713244,1458870624,1458896162,1459215861; Hm_lpvt_1db88642e346389874251b5a1eded6e3=1460339414; __utmt=1; __utma=1.1747574783.1452476991.1460099166.1460339414.221; __utmb=1.1.10.1460339414; __utmc=1; __utmz=1.1458713244.178.2.utmcsr=baidu|utmccn=(organic)|utmcmd=organic; xq_a_token=597eae8487f92b5c3bfba8802c646e74103895fa; xqat=597eae8487f92b5c3bfba8802c646e74103895fa; xq_r_token=6ec474715657893b15225e74b9c97424f681612f; xq_is_login=1; u=2079082878; xq_token_expire=Fri%20May%2006%202016%2009%3A50%3A36%20GMT%2B0800%20(CST)"
 YI = 100000000
 
-shgps = ['sz000002', 'sh601988', 'sh601318', 'sz000625', 'sh600518', 'sh600030', 'sh600000', 'sh601166']
+shgps = ['sh601668', 'sh601988', 'sh601318', 'sh600048', 'sh600518', 'sh600030', 'sh600000', 'sh601166']
 url_head = 'http://hq.sinajs.cn/list='
 
 if sys.version_info[0] == 3:
