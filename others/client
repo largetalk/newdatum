@@ -1,0 +1,52 @@
+h1. HttpComponent Async Http Client源码介绍
+
+httpcomponent源码涉及的对象非常多，这里我们只关注async client以及涉及的类，并且先提出我们目前遇见（发现）的问题，带着这些问题去看代码会更有目的性。我们目前碰见的问题有：
+# 测试发现AsyncHttpClient:client.execute(request, callback) 有时会耗时超过几毫秒，耗时过长的原因是java gc还是async client自身原因？
+# 测试发现adx与各个dsp之间的链接数量不均匀而且会有波动，造成这种现象的原因是？
+# 为什么adx在dsp耗时少时的qps比dsp耗时多时的qps要高，如果并发足够，两者的qps应该是一致，或者说adx的qps不应受dsp应答时间的影响？
+
+apache官方nio介绍文档 "NIO extension":http://hc.apache.org/httpcomponents-core-ga/tutorial/html/nio.html
+我们主要分析HttpComponent的3个部分：
+# The IO reactors
+# The HTTP client and request execution handlers
+# The HTTP connection
+
+h2. The IO reactors
+
+async client 使用的ioreactor类是DefaultConnectingIOReactor， 其继承于AbstractMultiworkerIOReactor， 开始运行时， 主ioreactor会产生数个worker ioreacotr（BaseIOReactor）， 主ioreactor只监听connect事件。client.execute(request, callback)-> DefaultConnectingIOReactor.connect() 然后主ioreactor的connect事件被触发， 在connect事件处理函数中， 将（sokcetChannel, sessionRequest)传输给某个worker ioreactor, 该worker ioreactor为socketChannel注册read事件， 然后新建IOSession对象，并调用sessionCreated函数。sessionCreated 会调用 eventDispatch.connected(session)并最终建立NHttpConnection然后发送数据。eventDispatch的内部我们后面再讲。
+
+这里有两个数据结构比较关键， sessionRequest和IOSession, 两者都通过selectkey.attachment()在事件触发与事件处理函数之间传递。SessionRequest是由client创建，connect事件之后就消亡了， SessionRequest内包含(selectkey, remoteAddress, localAddress, attachement)。 IOSession由worker ioreactor创建，贯穿请求整个过程，如果keepalive开启，IOSession可以被重用. IOSession内包含(selectkey, socketchannel, NHttpConnection).
+
+h2. The HTTP client and request execution handlers
+
+IO reactor 在事件触发时会引起一系列handler被调用，从而实现目的。这个部分主要由IOEventDispatch， NHttpClientEventHandler 和 HttpAsyncClientExchangeHandler 3个组件构成。如上所说，新建IOSession时，调用sessionCreate然后调用eventDispatch.connected(session)。 async client 使用的 IOEventDispatch 是 InternalIODispatch, NHttpClientEventHandler 是 HttpAsyncRequestExecutor, HttpAsyncClientExchangeHandler 是 DefaultClientExchangeHandlerImpl。整个的调用顺序如下：
+
+*AbstractIODispatch.connected(IOSession) / InternalIODispatch.onConnected(DefaultNHttpClientConnection) / HttpAsyncRequestExecutor.connected(NHttpClientConnection, Object attach) / HttpAsyncRequestExecutor.requestReady(NHttpClientConnection) / DefaultClientExchangeHandlerImpl.generateRequest() / NHttpConnection.submitRequest(request) / requestWriter.write(request); session.setEvent(EventMask.WRITE);*
+
+可以看出，这里还只是注册write事件。接下来是write事件被触发。
+
+*BaseIOReactor.writable(SelectionKey) / AbstractIODispatch.outputReady(IOSession) / InternalIODispatch.onOutputReady(DefaultNHttpClientConnection) / DefaultNHttpClientConnection.produceOutput(NHttpClientEventHandler) / outbuf.flush(this.session.channel());session.clearEvent(EventMask.WRITE);*
+
+至此才真正把request发出去了。
+如果对方server返回了response，对应的函数顺序是：
+
+*BaseIOReactor.readable(SelectionKey) / AbstractIODispatch.inputReady(IOSession) / InternalIODispatch.onInputReady(DefaultNHttpClientConnection) / DefaultNHttpClientConnection.consumeInput(NHttpClientEventHandler) / responseParser.fillBuffer(this.session.channel()); response = this.responseParser.parse(); / HttpAsyncRequestExecutor.inputReady(NHttpClientConnection , ContentDecoder) / DefaultClientExchangeHandlerImpl.consumeContent; DefaultClientExchangeHandlerImpl.responseCompleted*
+
+DefaultClientExchangeHandlerImpl.responseCompleted中调用我们通过client.execute传过去的callback， 至此整个http请求应答结束。
+
+ioreactor与eventDispatch的调用关系：
+
+* selectkey.isReadable -> ioreactor.readable -> eventDispatch.inputReady
+* selectkey.iswriteable -> ioreactor.writeable -> eventDispatch.outputReady
+* socketChannel.register -> ioreactor.sessionCreated -> eventDispatch.connected
+* timeoutCheck -> ioreactor.sessionTimeout -> eventDispatch.timeout
+* IOSession.close -> ioreactor.sessionClosed -> eventDispatch.disconnected
+
+h2. The HTTP connection
+
+http connection对象主要执行request的提交和接受response，将request转为二进制数据写入buffer，和从buffer中读取数据解析成response。
+
+async client使用的http connection是ManagedNHttpClientConnectionImpl， http connection内主要包含IOSession, context, responseParser, requestWriter, inbuf, outbuf等对象。http connection 主要提供的接口有consumeInput， produceOutput， requestInput， requestOutput等，前两个用于从socketChannel读数据到buf或将buf中数据写如socketChannel, 后两个用于控制读写。
+
+为了重用和管理http connection, async client 使用了PoolingNHttpClientConnectionManager， PoolingNHttpClientConnectionManager中包含一个 AbstractNIOConnPool 对象， AbstractNIOConnPool中又根据HttpRoute不同，各个HttpRoute有对应的一个http connection pool. HttpRoute可以认为是(localAddress, remoteAddress)对，所以两个主机之间一般是一个HttpRoute. 每个http connection pool有3个容器， leased, available, pending, leased表示正在使用connection， available中是空闲的connection， pending中是已经提交connect但还未被connected的sessionRequest(代表即将新建的connection). 3个容器数量之和要小于maxConnecitonPreHost. AbstractNIOConnPool 中也有leased, available, pending 3个容器，意义类似，用于控制maxTotalConnection, 另外还有leasingRequest容器，作用在于当 （leased + available + pending） > maxTotalConnection, 先将request存入此容器，等有空余connection时再提交connect。
+
