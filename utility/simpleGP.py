@@ -15,9 +15,9 @@ else:
     from urllib2 import urlopen
 
 def print_current_price(id):
-    if id.startswith('00') or id.startswith('15') or id.startswith('16'):
+    if id.startswith('00') or id.startswith('15') or id.startswith('16') or id.startswith('20'):
         id = 'sz' + id
-    elif id.startswith('60') or id.startswith('51'):
+    elif id.startswith('60') or id.startswith('51') or id.startswith('90'):
         id = 'sh' + id
     url = url_head + id
     content = urlopen(url).read()
