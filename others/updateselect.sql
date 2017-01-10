@@ -53,11 +53,11 @@ floor((a.f50/b.total)*a.count) as f50
 from `solution_day_show` as a join
 
 (SELECT solutionID, day, (
-f1 + f2 + f3 + f4 + f5 + f6 + f7 + f8 + f9 + f10 +
-f11 + f12 + f13 + f14 + f15 + f16 + f17 + f18 + f19 + f20 +
-f21 + f22 + f23 + f24 + f25 + f26 + f27 + f28 + f29 + f30 +
-f31 + f32 + f33 + f34 + f35 + f36 + f37 + f38 + f39 + f40 +
-f41 + f42 + f43 + f44 + f45 + f46 + f47 + f48 + f49 + f50
+f1 + 2*f2 + 3*f3 + 4*f4 + 5*f5 + 6*f6 + 7*f7 + 8*f8 + 9*f9 + 10*f10 +
+11*f11 + 12*f12 + 13*f13 + 14*f14 + 15*f15 + 16*f16 + 17*f17 + 18*f18 + 19*f19 + 20*f20 +
+21*f21 + 22*f22 + 23*f23 + 24*f24 + 25*f25 + 26*f26 + 27*f27 + 28*f28 + 29*f29 + 30*f30 +
+31*f31 + 32*f32 + 33*f33 + 34*f34 + 35*f35 + 36*f36 + 37*f37 + 38*f38 + 39*f39 + 40*f40 +
+41*f41 + 42*f42 + 43*f43 + 44*f44 + 45*f45 + 46*f46 + 47*f47 + 48*f48 + 49*f49 + 50*f50
 ) AS total
 FROM  `solution_day_show` where day = '2016-12-12') as b on a.solutionID=b.solutionID and a.day=b.day
 
@@ -66,11 +66,11 @@ FROM  `solution_day_show` where day = '2016-12-12') as b on a.solutionID=b.solut
 
 update `solution_day_show`  inner join
 (SELECT solutionID, day, (
-f1 + f2 + f3 + f4 + f5 + f6 + f7 + f8 + f9 + f10 +
-f11 + f12 + f13 + f14 + f15 + f16 + f17 + f18 + f19 + f20 +
-f21 + f22 + f23 + f24 + f25 + f26 + f27 + f28 + f29 + f30 +
-f31 + f32 + f33 + f34 + f35 + f36 + f37 + f38 + f39 + f40 +
-f41 + f42 + f43 + f44 + f45 + f46 + f47 + f48 + f49 + f50
+f1 + 2*f2 + 3*f3 + 4*f4 + 5*f5 + 6*f6 + 7*f7 + 8*f8 + 9*f9 + 10*f10 +
+11*f11 + 12*f12 + 13*f13 + 14*f14 + 15*f15 + 16*f16 + 17*f17 + 18*f18 + 19*f19 + 20*f20 +
+21*f21 + 22*f22 + 23*f23 + 24*f24 + 25*f25 + 26*f26 + 27*f27 + 28*f28 + 29*f29 + 30*f30 +
+31*f31 + 32*f32 + 33*f33 + 34*f34 + 35*f35 + 36*f36 + 37*f37 + 38*f38 + 39*f39 + 40*f40 +
+41*f41 + 42*f42 + 43*f43 + 44*f44 + 45*f45 + 46*f46 + 47*f47 + 48*f48 + 49*f49 + 50*f50
 ) AS total
 FROM  `solution_day_show` where day = '2016-12-12') as b on `solution_day_show`.solutionID=b.solutionID and `solution_day_show`.day=b.day 
 
@@ -84,11 +84,11 @@ f1 = floor((`solution_day_show`.f1/b.total)*`solution_day_show`.count)
 
 update `solution_day_show` as a inner join
 (SELECT solutionID, day, (
-f1 + f2 + f3 + f4 + f5 + f6 + f7 + f8 + f9 + f10 +
-f11 + f12 + f13 + f14 + f15 + f16 + f17 + f18 + f19 + f20 +
-f21 + f22 + f23 + f24 + f25 + f26 + f27 + f28 + f29 + f30 +
-f31 + f32 + f33 + f34 + f35 + f36 + f37 + f38 + f39 + f40 +
-f41 + f42 + f43 + f44 + f45 + f46 + f47 + f48 + f49 + f50
+f1 + 2*f2 + 3*f3 + 4*f4 + 5*f5 + 6*f6 + 7*f7 + 8*f8 + 9*f9 + 10*f10 +
+11*f11 + 12*f12 + 13*f13 + 14*f14 + 15*f15 + 16*f16 + 17*f17 + 18*f18 + 19*f19 + 20*f20 +
+21*f21 + 22*f22 + 23*f23 + 24*f24 + 25*f25 + 26*f26 + 27*f27 + 28*f28 + 29*f29 + 30*f30 +
+31*f31 + 32*f32 + 33*f33 + 34*f34 + 35*f35 + 36*f36 + 37*f37 + 38*f38 + 39*f39 + 40*f40 +
+41*f41 + 42*f42 + 43*f43 + 44*f44 + 45*f45 + 46*f46 + 47*f47 + 48*f48 + 49*f49 + 50*f50
 ) AS total
 FROM  `solution_day_show` where day = '2016-12-12') as b on a.solutionID=b.solutionID and a.day=b.day 
 
