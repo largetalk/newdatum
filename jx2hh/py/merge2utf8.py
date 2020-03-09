@@ -7,6 +7,8 @@ import re
 
 YN_PATTERN = re.compile(ur'[\u1e00-\u1eff]+')
 
+CN_PATTERN = re.compile(r'[\u4e00-\u9fa5]+')
+
 
 def iconv(inFile, from_code='tcvn', outFile=None):
     if outFile is None:
@@ -49,6 +51,23 @@ def mergeFile(luaFn, tmpFn, outFile=None):
                 tmpLine = tmpfr.readline()
                 if luaLine == '':
                     break
+
+                if luaLine.strip().startswith('Include('):
+                    try:
+                        includeStr = luaLine.decode('gb18030')
+                        fw.write(includeStr)
+                        continue
+                    except UnicodeError, ex:
+                        print 'include error', luaLine
+
+                #if "\\script\\" in luaLine and CN_PATTERN.search(luaLine) is not None: #TODO: exist bug
+                #    print '####inline script', luaLine
+                #    try:
+                #        includeStr = luaLine.decode('gb18030')
+                #        fw.write(includeStr)
+                #        continue
+                #    except UnicodeError, ex:
+                #        print 'inline error', luaLine
 
                 idx = luaLine.find('--')
                 if idx == -1:
