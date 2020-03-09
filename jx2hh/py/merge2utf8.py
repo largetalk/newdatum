@@ -52,7 +52,7 @@ def mergeFile(luaFn, tmpFn, outFile=None):
                 if luaLine == '':
                     break
 
-                if luaLine.strip().startswith('Include('):
+                if luaLine.strip().startswith('Include('): #process include script has chinese
                     try:
                         includeStr = luaLine.decode('gb18030')
                         fw.write(includeStr)
@@ -60,7 +60,36 @@ def mergeFile(luaFn, tmpFn, outFile=None):
                     except UnicodeError, ex:
                         print 'include error', luaLine
 
-                #if "\\script\\" in luaLine and CN_PATTERN.search(luaLine) is not None: #TODO: exist bug
+                if "\\script\\" in luaLine: #process as xxx yunanwen \\script\\chinese\\  yunanwen
+                    try:
+                        fw.write(luaLine.decode('gb18030'))
+                        continue
+                    except UnicodeError, ex:
+                        pass
+                    sluaidx = luaLine.find("\\script\\")
+                    eludidx = luaLine.find('"', sluaidx)
+                    stmpidx = tmpLine.find("\\script\\")
+                    etmpidx = tmpLine.find('"', stmpidx)
+                    try:
+                        inStr = luaLine[sluaidx:eludidx].decode('gb18030')
+                        fw.write(tmpLine[:stmpidx])
+                        fw.write(inStr)
+                        fw.write(tmpLine[etmpidx:])
+                    except UnicodeError, ex:
+                        print 'script error', luaLine
+                        fw.write(luaLine)
+
+                    continue
+
+
+                if "\\sound\\" in luaLine or ".wav" in luaLine or ".mp3" in luaLine:
+                    try:
+                        includeStr = luaLine.decode('gb18030')
+                        fw.write(includeStr)
+                        continue
+                    except UnicodeError, ex:
+                        print 'sound error', luaLine
+
                 #    print '####inline script', luaLine
                 #    try:
                 #        includeStr = luaLine.decode('gb18030')
@@ -79,8 +108,8 @@ def mergeFile(luaFn, tmpFn, outFile=None):
                 try:
                     tail = tail.decode('gb18030')
                 except UnicodeError, ex:
-                    print luaFn, 'line:', lCount
-                    print luaLine
+                    #print luaFn, 'line:', lCount
+                    #print luaLine
                     #print ex
                     tail = tmpLine[tmpIdx:]
 

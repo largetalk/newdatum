@@ -36,10 +36,11 @@ def transFile(inFile, fw):
             if cIdx != -1:
                 head = line[:cIdx]
             sentList = extractTCVN(head)
+            sIdx = 0
             for sentence, isTcvn in sentList:
                 if isTcvn:
-                    fw.write(u"line%s: %s\n" % (lcount, sentence))
-                    continue
+                    fw.write(u"line%s: %s: %s\n" % (lcount, sIdx, sentence))
+                sIdx += len(sentence)
 
 def extractTCVN(line):
     if YN_PATTERN.search(line) is None:
