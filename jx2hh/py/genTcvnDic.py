@@ -3,8 +3,9 @@ import os, sys
 import subprocess
 import io
 import re
+from collections import defaultdict
 from translate import Translator
-from googletrans import Translator as GTranslator
+#from googletrans import Translator as GTranslator
 import youdao_trans as YDTranslator
 
 
@@ -13,10 +14,10 @@ YN_PATTERN = re.compile(ur'[\u1e00-\u1eff]+')
 
 DELIMTER = u' || '
 
-GOO_TRANSLATOR = GTranslator(service_urls=[
-    'translate.google.cn',
-    #'translate.google.com',
-])
+#GOO_TRANSLATOR = GTranslator(service_urls=[
+#    'translate.google.cn',
+#    #'translate.google.com',
+#])
 
 def iconv(inFile, from_code='tcvn', outFile=None):
     if outFile is None:
@@ -36,6 +37,7 @@ def iconv(inFile, from_code='tcvn', outFile=None):
 def walk_lua(base_dir):
     base_dir = os.path.abspath(base_dir)
     fw = io.open(os.path.join(base_dir, 'tcvn_dic.txt'), 'w', encoding='utf8')
+    tcvn2zh_dic = defaultdict(lambda: set())
     for root, dirs, files  in os.walk(base_dir):
         for filename in files:
             if filename.endswith('.lua.u8'):
@@ -44,14 +46,28 @@ def walk_lua(base_dir):
                 if not os.path.exists(tsFn):
                     continue
 
-                fw.write(u'filename: ')
-                fw.write(u8Fn.decode('utf8'))
-                fw.write(u'\n')
-                transFile(u8Fn, tsFn, fw)
+                #fw.write(u'filename: ')
+                #fw.write(u8Fn.decode('utf8'))
+                #fw.write(u'\n')
+                transFile(u8Fn, tsFn, fw, tcvn2zh_dic)
     fw.close()
                 
+    fsw = io.open(os.path.join(base_dir, 'tcvn_set.txt'), 'w', encoding='utf8')
+    for k, sets in tcvn2zh_dic.items():
+        #if len(sets) == 1:
+        #    continue
+        fsw.write(u'tcvn: ')
+        fsw.write(k)
+        fsw.write(u'\n')
+        #fsw.write(DELIMTER)
+        for w in sets:
+            fsw.write(w)
+            fsw.write(u'\n')
+    fsw.close()
 
-def transFile(u8Fn, tsFn, fw):
+notFirst = 0
+def transFile(u8Fn, tsFn, fw, transSet):
+    global notFirst
     with io.open(u8Fn, 'r', encoding='utf8') as u8fr:
         with io.open(tsFn, 'r', encoding='utf8') as tsfr:
             lCount = 0
@@ -66,18 +82,31 @@ def transFile(u8Fn, tsFn, fw):
                     continue
 
                 sentList = extractTCVN(u8Line)
+                firstSen = True
                 for sentence, isTcvn in sentList:
                     if not isTcvn or '\\script\\' in sentence or '.wav' in sentence or '.mp3' in sentence:
                         continue
-                    fidx = u8Line.find(sentence)
-                    eidx = findSmallIdx(tsLine, fidx + 1)
-                    
-                    fw.write(u'line%s: %s %s ' % (lCount, fidx, eidx))
-                    fw.write(sentence)
-                    fw.write(DELIMTER)
-                    fw.write(tsLine[fidx:eidx])
-                    fw.write(u'\n')
-                    break
+                    if firstSen:
+                        fidx = u8Line.find(sentence)
+                        eidx = findSmallIdx(tsLine, fidx + 1)
+                        
+                        #fw.write(u'line%s: %s %s ' % (lCount, fidx, eidx))
+                        writeTrans(fw, sentence, tsLine[fidx:eidx], transSet)
+                        firstSen = False
+                    else:
+                        trans = None
+                        notFirst += 1
+                        #print notFirst
+                        #trans = transSentence(sentence)
+                        if trans is not None and not trans.starswith('MYMEMORY WARNING'):
+                            writeTrans(fw, sentence, trans, transSet)
+
+def writeTrans(fw, sentence, trans, transSet):
+    fw.write(sentence)
+    fw.write(DELIMTER)
+    fw.write(trans)
+    fw.write(u'\n')
+    transSet[sentence].add(trans)
 
 def findSmallIdx(tsLine, fidx):
     a = tsLine.find(u'/', fidx)
@@ -116,30 +145,14 @@ def extractTCVN(line):
     return ret
 
 
-def transSentence(sentence, translator=GOO_TRANSLATOR):
-    #### 
-    #youdao translate
-    return YDTranslator.translate(sentence)
-    ####
-    #google translate
-    #try:
-    #    trans = translator.translate(sentence, src='vi', dest='zh-CN')
-    #    if trans.text is not None and len(trans.text.strip()) > 1:
-    #        return trans.text
-    #    return None
-    #except KeyboardInterrupt, ex:
-    #    raise ex
-    #except BaseException, ex:
-    #    print(ex)
-    #    return None
-    ####
-    #microsoft translate
-    #translation = translator.translate(sentence)
-    #if translation is None or len(translation) < 1:
-    #    return None
-    #return translation
+def transSentence(sentence, translator=MS_TRANSLATOR):
+    translation = translator.translate(sentence)
+    if translation is None or len(translation) < 1:
+        return None
+    return translation
 
 
 if __name__ == '__main__':
-    root = '/Users/largetalk/jx2hh/jx2JQ_youdao_trans/gs/script'
+    root = '/home/arthur/material/jx2/script'
+    #root = '/Users/largetalk/jx2hh/jx2JQ_youdao_trans/gs/script'
     walk_lua(root)
