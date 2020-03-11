@@ -104,12 +104,12 @@ def replace(indexFile, old_base, base):
     if EXEC_ICONV:
         walk_lua(base)
 
-def iconvAndmv(inFile, from_code='tcvn', outFile=None):
+def iconvAndmv(inFile, from_code='utf8', outFile=None):
     if outFile is None:
-        outFile = inFile + '.u8'
+        outFile = inFile + '.gb'
     if not os.path.exists(outFile):
         with open(outFile, 'wb') as fout:
-            ret = subprocess.call(['iconv', '-f', from_code, '-t', 'utf-8', inFile], stdout=fout)
+            ret = subprocess.call(['iconv', '-f', from_code, '-t', 'gb18030', inFile], stdout=fout)
             print('iconv %s return %s' % (inFile, ret))
 
     with open(inFile, 'wb') as fout:
