@@ -11,6 +11,8 @@ import io
 #line12: 4: Gia nhập môn phái
 #zh: 加入部落
 
+EXEC_ICONV = False
+
 
 def actualFileName(fn, old_base, base):
     if fn.startswith('filename:'):
@@ -39,6 +41,8 @@ def replace(indexFile, old_base, base):
     data = None
     old_lc = 0
     gap = 0
+    not_replaced = 0
+    replaced = 0
     with io.open(indexFile, 'r', encoding='utf8') as fr:
         while True:
             line = fr.readline()
@@ -70,6 +74,7 @@ def replace(indexFile, old_base, base):
                 zhline = fr.readline()
                 zh = zhline[4:].strip()
                 if zh == '':
+                    not_replaced += 1
                     continue
                 curLine = data[lc-1].decode('utf8')
 
@@ -87,11 +92,13 @@ def replace(indexFile, old_base, base):
                     #    #print data[lc-1][pos:pos+len(tcvn)], len(data[lc-1][pos:pos+len(tcvn)])
                     #    break
                 else:
+                    replaced += 1
                     data[lc-1] = curLine.replace(tcvn, zh, 1).encode('utf8')
                     old_lc = lc
                     gap += len(zh) - len(tcvn)
                     #print zh, type(zh), len(zh), tcvn, type(tcvn), len(tcvn)
                     #print data[lc-1]
+    print 'replaced', replaced, 'not_replaced', not_replaced
 
 
 if __name__ == '__main__':

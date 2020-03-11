@@ -4,6 +4,8 @@ import subprocess
 import io
 import re
 
+import automat_extract
+
 
 YN_PATTERN = re.compile(ur'[\u1e00-\u1eff]+')
 
@@ -14,7 +16,7 @@ def walk_lua(base_dir):
         for filename in files:
             if filename.endswith('.lua'):
                 luaFn = os.path.join(root, filename)
-                print luaFn
+                #print luaFn
                 transFile(luaFn, fw)
     fw.close()
                 
@@ -27,6 +29,8 @@ def transFile(inFile, fw):
         lcount = 0
         for line in fin:
             lcount += 1
+            if line.strip().startswith('Include('):
+                continue
             qIdx = line.find('"')
             cIdx = line.find('--')
             if qIdx == -1 or (cIdx != -1 and qIdx > cIdx):
@@ -35,7 +39,7 @@ def transFile(inFile, fw):
             head = line
             if cIdx != -1:
                 head = line[:cIdx]
-            sentList = extractTCVN(head)
+            sentList = automat_extract.extractTCVN(head)
             sIdx = 0
             for sentence, isTcvn in sentList:
                 if isTcvn:
@@ -70,5 +74,5 @@ def extractTCVN(line):
 
 
 if __name__ == '__main__':
-    root = '/Users/largetalk/git/jx2Local/script/'
+    root = '/home/arthur/git/jx2local/script/'
     walk_lua(root)
