@@ -38,6 +38,9 @@ class State(object):
 
     STAND_BY = 7
 
+PC_FOLLOW_CHARS = ['s', '%', 'd', 'f', 'Y', 'H', 'm', 'M', 'S', 'y', 'q']
+BD_CHARS = ['\t', ',', ':', '(', ')', '*', '+', '[', ']', '!', '{', '}', '.', '?', '>', ';', '\\', '-', '_', '#', '@', '=', '&']
+
 class Automat(object):
     def __init__(self):
         self.pre_state = None
@@ -62,7 +65,7 @@ class Automat(object):
             self.state = State.PRE_TCVN
 
     def casePreTCVN(self, c):
-        if c in [' ', '\t', ',', ':', '(', ')', '*', '+', '[', ']', '!', '{', '}', '.', '?', '>']:
+        if c.isdigit() or c == ' ' or c in BD_CHARS:
             self.normal.append(c)
         elif c == '"':
             self.normal.append(c)
@@ -111,7 +114,7 @@ class Automat(object):
             self.normal.extend(self.stand)
             self.stand = []
             self.state = State.PRE_TCVN
-            if pre_c == '%' and c in ['s', '%', 'd', 'f', 'Y', 'H', 'm', 'M', 'S', 'y', 'q']:
+            if pre_c == '%' and c in PC_FOLLOW_CHARS:
                 self.normal.append(c)
             elif pre_c == '\\' and c in ['n', 't', 'r', '\\']:
                 self.normal.append(c)
@@ -121,7 +124,7 @@ class Automat(object):
             pre_c = self.stand[-1]
             if c in [' ', ',', '%']:
                 self.stand.append(c)
-            elif pre_c == '%' and c in ['s', 'd', 'f', 'Y', 'H', 'm', 'M', 'S', 'y', 'q']:
+            elif (pre_c == '%' and c in PC_FOLLOW_CHARS) or c in BD_CHARS:
                 self.processTcvn()
                 self.normal.extend(self.stand)
                 self.normal.append(c)
