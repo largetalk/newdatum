@@ -1,6 +1,7 @@
 #coding:utf8
 import os, sys
 import io
+import subprocess
 
 
 #################
@@ -11,7 +12,7 @@ import io
 #line12: 4: Gia nhập môn phái
 #zh: 加入部落
 
-EXEC_ICONV = False
+EXEC_ICONV = True
 
 
 def actualFileName(fn, old_base, base):
@@ -19,6 +20,7 @@ def actualFileName(fn, old_base, base):
         fn = fn[10:]
     if not fn.startswith(old_base):
         print 'error fn', fn
+        sys.exit(-1)
         return fn
     name = fn[len(old_base):]
     if name.startswith("/"):
@@ -99,10 +101,32 @@ def replace(indexFile, old_base, base):
                     #print zh, type(zh), len(zh), tcvn, type(tcvn), len(tcvn)
                     #print data[lc-1]
     print 'replaced', replaced, 'not_replaced', not_replaced
+    if EXEC_ICONV:
+        walk_lua(base)
 
+def iconvAndmv(inFile, from_code='tcvn', outFile=None):
+    if outFile is None:
+        outFile = inFile + '.u8'
+    if not os.path.exists(outFile):
+        with open(outFile, 'wb') as fout:
+            ret = subprocess.call(['iconv', '-f', from_code, '-t', 'utf-8', inFile], stdout=fout)
+            print('iconv %s return %s' % (inFile, ret))
+
+    with open(inFile, 'wb') as fout:
+        ret = subprocess.call(['mv', outFile, inFile], stdout=fout)
+        print('mv %s %s return %s' % (outFile, inFile, ret))
+
+
+def walk_lua(base_dir):
+    base_dir = os.path.abspath(base_dir)
+    for root, dirs, files  in os.walk(base_dir):
+        for filename in files:
+            if filename.endswith('.lua'):
+                luaFn = os.path.join(root, filename)
+                u8Fn = iconvAndmv(luaFn)
 
 if __name__ == '__main__':
     replace_file = '/home/arthur/git/jx2local/script/tcvn_replace.txt'
-    old_base = '/Users/largetalk/git/jx2Local/script/'
+    old_base = '/home/arthur/git/jx2local/script'
     base = '/home/arthur/git/jx2local/script'
     replace(replace_file, old_base, base)
