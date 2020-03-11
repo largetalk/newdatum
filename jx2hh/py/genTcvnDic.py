@@ -98,7 +98,7 @@ def transFile(u8Fn, tsFn, fw, transSet):
                         notFirst += 1
                         #print notFirst
                         #trans = transSentence(sentence)
-                        if trans is not None and not trans.starswith('MYMEMORY WARNING'):
+                        if trans is not None and not trans.startswith('MYMEMORY WARNING'):
                             writeTrans(fw, sentence, trans, transSet)
 
 def writeTrans(fw, sentence, trans, transSet):
