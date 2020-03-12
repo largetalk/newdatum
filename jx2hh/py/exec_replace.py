@@ -12,7 +12,7 @@ import subprocess
 #line12: 4: Gia nhập môn phái
 #zh: 加入部落
 
-EXEC_ICONV = True
+EXEC_ICONV = False
 
 
 def actualFileName(fn, old_base, base):
@@ -112,9 +112,8 @@ def iconvAndmv(inFile, from_code='utf8', outFile=None):
             ret = subprocess.call(['iconv', '-f', from_code, '-t', 'gb18030', inFile], stdout=fout)
             print('iconv %s return %s' % (inFile, ret))
 
-    with open(inFile, 'wb') as fout:
-        ret = subprocess.call(['mv', outFile, inFile], stdout=fout)
-        print('mv %s %s return %s' % (outFile, inFile, ret))
+    ret = subprocess.call(['mv', outFile, inFile])
+    print('mv %s %s return %s' % (outFile, inFile, ret))
 
 
 def walk_lua(base_dir):
@@ -127,6 +126,6 @@ def walk_lua(base_dir):
 
 if __name__ == '__main__':
     replace_file = '/home/arthur/git/jx2local/script/tcvn_replace.txt'
-    old_base = '/home/arthur/git/jx2local/script'
+    old_base = '/Users/largetalk/git/jx2local/script'
     base = '/home/arthur/git/jx2local/script'
     replace(replace_file, old_base, base)
