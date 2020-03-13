@@ -81,9 +81,10 @@ def replace(indexFile, old_base, base):
                 curLine = data[lc-1].decode('utf8')
 
                 if curLine[pos:pos+len(tcvn)] != tcvn:
-                    print 'fetch tcvn error', filename, lc, pos, line, curLine
-                        #print tcvn, len(tcvn)
-                        #print data[lc-1][pos:pos+len(tcvn)], len(data[lc-1][pos:pos+len(tcvn)])
+                    print 'fetch tcvn error', filename, lc, pos, line
+                    print curLine
+                    print tcvn, len(tcvn)
+                    print data[lc-1][pos:pos+len(tcvn)], len(data[lc-1][pos:pos+len(tcvn)])
                     break
                     #if curLine[pos:len(zh)] == zh: #for reprocess
                     #    print 'already replace', filename, line
@@ -95,7 +96,8 @@ def replace(indexFile, old_base, base):
                     #    break
                 else:
                     replaced += 1
-                    data[lc-1] = curLine.replace(tcvn, zh, 1).encode('utf8')
+                    #data[lc-1] = curLine.replace(tcvn, zh, 1).encode('utf8')
+                    data[lc-1] = u''.join([ curLine[:pos], zh, curLine[pos+len(tcvn): ] ]).encode('utf8')
                     old_lc = lc
                     gap += len(zh) - len(tcvn)
                     #print zh, type(zh), len(zh), tcvn, type(tcvn), len(tcvn)
@@ -125,7 +127,7 @@ def walk_lua(base_dir):
                 u8Fn = iconvAndmv(luaFn)
 
 if __name__ == '__main__':
-    replace_file = '/home/arthur/git/jx2local/script/tcvn_replace.txt'
+    replace_file = '/Users/largetalk/git/jx2local/script/tcvn_replace.txt'
     old_base = '/Users/largetalk/git/jx2local/script'
-    base = '/home/arthur/git/jx2local/script'
+    base = '/Users/largetalk/git/jx2local/script'
     replace(replace_file, old_base, base)

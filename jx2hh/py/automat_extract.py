@@ -40,7 +40,7 @@ class State(object):
     STAND_BY = 7
 
 PC_FOLLOW_CHARS = ['s', '%', 'd', 'f', 'Y', 'H', 'm', 'M', 'S', 'y', 'q']
-BD_CHARS = ['\t', ',', ':', '(', ')', '*', '+', '[', ']', '!', '{', '}', '.', '?', '>', ';', '\\', '-', '_', '#', '@', '=', '&']
+BD_CHARS = ['\t', ',', ':', '(', ')', '*', '+', '[', ']', '!', '{', '}', '.', '?', '>', ';', '-', '_', '#', '@', '=', '&', '\n', '\r']
 
 class Automat(object):
     def __init__(self):
@@ -103,7 +103,7 @@ class Automat(object):
             self.processTcvn()
             self.normal.append(c)
             self.state = State.IN_PAIR
-        elif c in [' ', ',', '%']:
+        elif c in [' ', ',', '%', '\\']:
             self.stand.append(c)
             self.state = State.STAND_BY
         else:
@@ -123,9 +123,9 @@ class Automat(object):
                 self.casePreTCVN(c)
         if self.pre_state == State.IN_TCVN:
             pre_c = self.stand[-1]
-            if c in [' ', ',', '%']:
+            if c in [' ', ',', '%', '\\']:
                 self.stand.append(c)
-            elif (pre_c == '%' and c in PC_FOLLOW_CHARS) or c in BD_CHARS:
+            elif (pre_c == '%' and c in PC_FOLLOW_CHARS) or c in BD_CHARS or (pre_c == '\\' and c in ['n', 't', 'r']):
                 self.processTcvn()
                 self.normal.extend(self.stand)
                 self.normal.append(c)
@@ -170,8 +170,8 @@ class Automat(object):
 excludes = ['\\script\\', '\\image\\', '\\sound\\', '\\music\\', '.mp3', '.wav']
 
 def extractTCVN(line):
-    print '########'
-    print line
+    #print '########'
+    #print line
     if line.count('"') % 2 != 0:
         return [(line, False)]
     #if YN_PATTERN.search(line) is None:
@@ -198,7 +198,7 @@ def extractTCVN(line):
                 ret.append((line[pidx:nidx], flag))
             flag = not flag
             pidx = nidx + 1
-   
+  
     rlen = sum([len(x[0]) for x in ret])
     if len(line) != rlen:
         print '#########auto extract error', line
@@ -230,8 +230,8 @@ if __name__ == '__main__':
     l4 = u'         Say(msg, 2, format("Đồng ý/#upgrade_compose_skill_do(%d, %d)", v, nMax), "Hủy bỏ/nothing")'
     l5 = u'     "<sex> đã gia nhập môn phái."'
     l6 = u'    this.msCamp:turnPlayer(0, SendScript2Client, [[Add3EElf(450,350,"\\image\\EFFECT\\sfx\\其他\\战斗开始_越南.3e",1000*2,0.7)]])'
-    l7 = u'                                                         Stage_info[1].npc_name.."Cổ Dương Thú tính khí phát tác, nếu muốn cứu nó cần:\n  <color=green>1<color>. <color=yellow>Đội trưởng tổ đội 3-5 người<color>, <color=red>tất cả thành viên <color> cần làm <color=yellow>nhiệm vụ Tây bắc-Hoàng Sa Lạc Mạc<color>\n  <color=green>2<color>. Trên người đội trưởng phải có <color=yellow>Bích Dao Thanh Tâm Đơn<color>.\n  <color=green>3<color>. Trong đội không được có người <color=yellow>võ công lưu phái giống nhau<color>."}                  '
-    l8 = u'     end, SLT_NPC..format("Thành viên dưới đây không đạt cấp %d:\n", SLT_LIMIT_LEVEL)) ~= 1 then'
+    l7 = u'                                                         Stage_info[1].npc_name.."Cổ Dương Thú tính khí phát tác, nếu muốn cứu nó cần:\\n  <color=green>1<color>. <color=yellow>Đội trưởng tổ đội 3-5 người<color>, <color=red>tất cả thành viên <color> cần làm <color=yellow>nhiệm vụ Tây bắc-Hoàng Sa Lạc Mạc<color>\\n  <color=green>2<color>. Trên người đội trưởng phải có <color=yellow>Bích Dao Thanh Tâm Đơn<color>.\\n  <color=green>3<color>. Trong đội không được có người <color=yellow>võ công lưu phái giống nhau<color>."}                  '
+    l8 = u'     end, SLT_NPC..format("Thành viên dưới đây không đạt cấp %d:\\n", SLT_LIMIT_LEVEL)) ~= 1 then'
     #print filter(lambda x: x[1], extractTCVN(l1))
     #print filter(lambda x: x[1], extractTCVN(l2))
     #print filter(lambda x: x[1], extractTCVN(l3))
@@ -239,15 +239,16 @@ if __name__ == '__main__':
     #print filter(lambda x: x[1], extractTCVN(l5))
     #print filter(lambda x: x[1], extractTCVN(l6))
     print extractTCVN(l8)
-    with io.open('/tmp/aaa.txt', 'wb') as fw:
-        sentList = extractTCVN(l7)
-        print sentList
-        sIdx = 0
-        for sentence, isTcvn in sentList:
-            if isTcvn:
-                print sentence
-                fw.write("line: %s: %s\n" % (sIdx, sentence.encode('utf8')))
-            sIdx += len(sentence)
+    print extractTCVN(l7)
+    #with io.open('/tmp/aaa.txt', 'wb') as fw:
+    #    sentList = extractTCVN(l7)
+    #    print sentList
+    #    sIdx = 0
+    #    for sentence, isTcvn in sentList:
+    #        if isTcvn:
+    #            print sentence
+    #            fw.write("line: %s: %s\n" % (sIdx, sentence.encode('utf8')))
+    #        sIdx += len(sentence)
 
 
     #l7 = u'aaa"bbb"ccc'
