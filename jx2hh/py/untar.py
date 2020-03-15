@@ -1,5 +1,7 @@
+#coding:utf8
 import os, sys
 import tarfile
+import hashlib
 
 
 base = '/Users/largetalk/jx2hh'
@@ -19,7 +21,10 @@ def untar(inFile):
         except UnicodeDecodeError, ex:
             print 'fatal error name:', m.name
             name = m.name
-        #print '###', name
+        if 'script' in name and m.name  != name:
+            print 'origin', m.name
+            print 'update', name
+            print 'check', name.decode('utf8').encode('gb18030'), m.name == name.decode('utf8').encode('gb18030')
         mp = os.path.join(base, name)
         #print mp
         if not os.path.exists(os.path.dirname(mp)):
@@ -30,13 +35,52 @@ def untar(inFile):
                 os.makedirs(mp)
         elif m.isfile():
             if os.path.exists(mp):
-                continue
+                fr = tf.extractfile(m)
+                if check_md5(mp, fr):
+                    continue
+                else:
+                    mp = mp + '.1'
+                    if os.path.exists(mp):
+                        print mp
             fr = tf.extractfile(m)
             with open(mp, 'wb') as fw:
-                for l in fr:
-                    fw.write(l)
+                while True:
+                    data = fr.read(4096)
+                    if not data:
+                        break
+                    fw.write(data)
+                #for l in fr:
+                #    fw.write(l)
         else:
             print 'error tarinfo', m
+
+def check_md5(mp, fr):
+    oldmd5 = get_file_md5(mp)
+    m = hashlib.md5()   #创建md5对象
+    while True:
+        data = fr.read(4096)
+        if not data:
+            break
+        m.update(data)
+    newmd5 = m.hexdigest()
+    fr.seek(0)
+    return oldmd5 == newmd5
+
+def get_file_md5(file_name):
+    """
+    计算文件的md5
+    :param file_name:
+    :return:
+    """
+    m = hashlib.md5()   #创建md5对象
+    with open(file_name,'rb') as fobj:
+        while True:
+            data = fobj.read(4096)
+            if not data:
+                break
+            m.update(data)  #更新md5对象
+
+    return m.hexdigest()    #返回md5对象
 
 if __name__ == '__main__':
     #untar('/Users/largetalk/jx2hh/script.tar.gz')
