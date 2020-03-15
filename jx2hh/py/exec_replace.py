@@ -2,6 +2,8 @@
 import os, sys
 import io
 import subprocess
+import tarfile
+from datetime import datetime
 
 
 #################
@@ -12,7 +14,9 @@ import subprocess
 #line12: 4: Gia nhập môn phái
 #zh: 加入部落
 
-EXEC_ICONV = False
+REPLACE = True
+EXEC_ICONV = True
+TAR_FILE = True
 
 
 def actualFileName(fn, old_base, base):
@@ -103,8 +107,28 @@ def replace(indexFile, old_base, base):
                     #print zh, type(zh), len(zh), tcvn, type(tcvn), len(tcvn)
                     #print data[lc-1]
     print 'replaced', replaced, 'not_replaced', not_replaced
+
+def main(indexFile, old_base, base):
+    if REPLACE:
+        replace(indexFile, old_base, base)
     if EXEC_ICONV:
         walk_lua(base)
+    if TAR_FILE:
+        tardir(base)
+
+def tardir(base_dir):
+    base_dir = os.path.abspath(base_dir)
+    dirname = os.path.dirname(base_dir)
+    t = datetime.now().strftime("%m%d%H")
+    tf = tarfile.open(name=os.path.join(dirname, 'script_%s.tar.gz' % t), mode='w:gz')
+
+    for root, dirs, files  in os.walk(base_dir):
+        for filename in files:
+            luaFn = os.path.join(root, filename)
+            arcFn = luaFn.replace(dirname, '').decode('utf8').encode('gb18030')
+            tf.add(name=luaFn, arcname=arcFn, recursive=False)
+    tf.close()
+
 
 def iconvAndmv(inFile, from_code='utf8', outFile=None):
     if outFile is None:
@@ -116,6 +140,7 @@ def iconvAndmv(inFile, from_code='utf8', outFile=None):
 
     ret = subprocess.call(['mv', outFile, inFile])
     print('mv %s %s return %s' % (outFile, inFile, ret))
+    return inFile
 
 
 def walk_lua(base_dir):
@@ -130,4 +155,4 @@ if __name__ == '__main__':
     replace_file = '/Users/largetalk/git/jx2local/script/tcvn_replace.txt'
     old_base = '/Users/largetalk/git/jx2local/script'
     base = '/Users/largetalk/git/jx2local/script'
-    replace(replace_file, old_base, base)
+    main(replace_file, old_base, base)
