@@ -15,8 +15,9 @@ from datetime import datetime
 #zh: 加入部落
 
 REPLACE = True
-EXEC_ICONV = True
-TAR_FILE = True
+REPLACE_ALL = True
+EXEC_ICONV = False
+TAR_FILE = False
 
 
 def actualFileName(fn, old_base, base):
@@ -80,8 +81,11 @@ def replace(indexFile, old_base, base):
                 zhline = fr.readline()
                 zh = zhline[4:].strip()
                 if zh == '':
-                    not_replaced += 1
-                    continue
+                    if REPLACE_ALL:
+                        zh = u'中文中文'
+                    else:
+                        not_replaced += 1
+                        continue
                 curLine = data[lc-1].decode('utf8')
 
                 if curLine[pos:pos+len(tcvn)] != tcvn:
@@ -152,7 +156,7 @@ def walk_lua(base_dir):
                 u8Fn = iconvAndmv(luaFn)
 
 if __name__ == '__main__':
-    replace_file = '/Users/largetalk/git/jx2local/script/tcvn_replace.txt'
+    replace_file = '/home/arthur/git/jx2local/script/tcvn_replace.txt'
     old_base = '/Users/largetalk/git/jx2local/script'
-    base = '/Users/largetalk/git/jx2local/script'
+    base = '/home/arthur/git/jx2local/script'
     main(replace_file, old_base, base)

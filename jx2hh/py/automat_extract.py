@@ -232,14 +232,16 @@ if __name__ == '__main__':
     l6 = u'    this.msCamp:turnPlayer(0, SendScript2Client, [[Add3EElf(450,350,"\\image\\EFFECT\\sfx\\其他\\战斗开始_越南.3e",1000*2,0.7)]])'
     l7 = u'                                                         Stage_info[1].npc_name.."Cổ Dương Thú tính khí phát tác, nếu muốn cứu nó cần:\\n  <color=green>1<color>. <color=yellow>Đội trưởng tổ đội 3-5 người<color>, <color=red>tất cả thành viên <color> cần làm <color=yellow>nhiệm vụ Tây bắc-Hoàng Sa Lạc Mạc<color>\\n  <color=green>2<color>. Trên người đội trưởng phải có <color=yellow>Bích Dao Thanh Tâm Đơn<color>.\\n  <color=green>3<color>. Trong đội không được có người <color=yellow>võ công lưu phái giống nhau<color>."}                  '
     l8 = u'     end, SLT_NPC..format("Thành viên dưới đây không đạt cấp %d:\\n", SLT_LIMIT_LEVEL)) ~= 1 then'
+    l9 = u'            Say("Muốn tu luyện hay không?",2,"Đúng/practice_start","Sai/no");'
+    l10 = u'    if TT_TARGET_Name == "Gia đinh" then'
     #print filter(lambda x: x[1], extractTCVN(l1))
     #print filter(lambda x: x[1], extractTCVN(l2))
     #print filter(lambda x: x[1], extractTCVN(l3))
     #print filter(lambda x: x[1], extractTCVN(l4))
     #print filter(lambda x: x[1], extractTCVN(l5))
     #print filter(lambda x: x[1], extractTCVN(l6))
-    print extractTCVN(l8)
-    print extractTCVN(l7)
+    print extractTCVN(l9)
+    print extractTCVN(l10)
     #with io.open('/tmp/aaa.txt', 'wb') as fw:
     #    sentList = extractTCVN(l7)
     #    print sentList
