@@ -16,8 +16,8 @@ from datetime import datetime
 
 REPLACE = True
 REPLACE_ALL = True
-EXEC_ICONV = False
-TAR_FILE = False
+EXEC_ICONV = True
+TAR_FILE = True
 
 
 def actualFileName(fn, old_base, base):
@@ -156,7 +156,7 @@ def walk_lua(base_dir):
                 u8Fn = iconvAndmv(luaFn)
 
 if __name__ == '__main__':
-    replace_file = '/home/arthur/git/jx2local/script/tcvn_replace.txt'
+    replace_file = '/Users/largetalk/git/jx2local/script/tcvn_replace.txt'
     old_base = '/Users/largetalk/git/jx2local/script'
-    base = '/home/arthur/git/jx2local/script'
+    base = '/Users/largetalk/git/jx2local/script'
     main(replace_file, old_base, base)

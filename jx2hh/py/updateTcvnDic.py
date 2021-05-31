@@ -77,7 +77,7 @@ def updateDic(tcvnFile, dicFile):
     fw.close()
 
 if __name__ == '__main__':
-    tcvn_file = '/home/arthur/git/jx2local/script/fetch_tcvn.txt'
-    dic_file = '/home/arthur/git/jx2local/tcvn2zh.txt'
+    tcvn_file = '/Users/largetalk/git/jx2local/script/fetch_tcvn.txt'
+    dic_file = '/Users/largetalk/git/jx2local/tcvn2zh.txt'
     updateDic(tcvn_file, dic_file)
     

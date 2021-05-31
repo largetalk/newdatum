@@ -74,5 +74,5 @@ def extractTCVN(line):
 
 
 if __name__ == '__main__':
-    root = '/home/arthur/git/jx2local/script/'
+    root = '/Users/largetalk/git/jx2local/script/'
     walk_lua(root)

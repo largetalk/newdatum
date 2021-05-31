@@ -50,7 +50,7 @@ def replaceIndex(inFile, dic):
     fw.close()
 
 if __name__ == '__main__':
-    tcvn_file = '/home/arthur/git/jx2local/script/fetch_tcvn.txt'
-    dic_file = '/home/arthur/git/jx2local/tcvn2zh.txt'
+    tcvn_file = '/Users/largetalk/git/jx2local/script/fetch_tcvn.txt'
+    dic_file = '/Users/largetalk/git/jx2local/tcvn2zh.txt'
     dic = loadDic(dic_file)
     replaceIndex(tcvn_file, dic)
